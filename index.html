@@ -1,0 +1,234 @@
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Grid Page</title>
+    <style>
+      body{
+        background-image:url('https://github.com/lorenzfk/justTest/blob/master/flbg2.png?raw=true');
+        background-size:100% 100%;
+      }
+        /* Basic reset */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Comic Neue", cursive;font-size:14px}
+
+        /* Grid container styling */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 10px;
+            height: 100vh;
+            align-items: center;
+            justify-items: center;
+        }
+
+        /* Grid items styling */
+        .grid-item {
+            text-align: center;
+            cursor: pointer;
+          background:RGBA(255,255,255,0.7);
+          border-radius:20px;
+          min-width:150px;
+          min-height:150px;
+          display-flex;
+          align-items:center;
+        }
+
+        .grid-item img {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+        }
+
+        .grid-item p {
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+
+        /* Hidden content div styling */
+        .content-div {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            font-size: 1.5em;
+        }
+
+        /* Close button styling */
+        .close-button {
+            position: fixed;
+            bottom: 10%;
+          left:50%;
+          transform:translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .close-button img {
+            width: 50px;
+            height: 50px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Grid Container -->
+    <div class="grid-container">
+        <!-- Image 1 -->
+        <div class="grid-item" onclick="showContent(1)">
+            <img src="https://i.pinimg.com/originals/79/fa/49/79fa4998e0ac325ad66983b7d1e57994.png" alt="Image 1">
+            <p>F+L Uhr</p>
+        </div>
+        <!-- Image 2 -->
+        <div class="grid-item" onclick="showContent(2)">
+            <img src="https://github.com/lorenzfk/justTest/blob/master/denki.png?raw=true" alt="Image 2">
+            <p>Wahrheit</p>
+        </div>
+        <!-- Image 3 -->
+        <div class="grid-item" onclick="showContent(3)">
+            <img src="https://github.com/lorenzfk/justTest/blob/master/weihnachti.png?raw=true" alt="Image 3">
+            <p>Adventskalender</p>
+        </div>
+        <!-- Image 4 -->
+        <div class="grid-item" style="display:none" onclick="showContent(4)">
+            <img src="image4.jpg" alt="Image 4">
+            <p>Locked Image</p>
+        </div>
+    </div>
+
+    <!-- Content Divs -->
+    <div id="content1" class="content-div">
+        <p>Fily und Lolo lieben sich schon</p>
+        <p id="counter">0 Days 0 Hours 0 Minutes 0 Seconds</p>
+    </div>
+
+    <div id="content2" class="content-div">
+        <button onclick="displayRandomQuestion()">Frage Ziehen</button>
+        <p id="questionDisplay">Wenn dir mal keine Frage einfällt</p>
+    </div>
+
+    <div id="content3" class="content-div">
+        <img src="https://github.com/lorenzfk/justTest/blob/master/schloss.png?raw=true" alt="Locked Image">
+    </div>
+
+    <div id="content4" class="content-div">
+        <img src="https://github.com/lorenzfk/justTest/blob/master/schloss.png?raw=true" alt="Locked Image">
+    </div>
+
+    <!-- Close All Button -->
+    <div class="close-button" onclick="closeAll()">
+        <img src="https://t3.ftcdn.net/jpg/01/41/00/12/360_F_141001216_6ZDLJQmehy1umZ22hkzCRaNaOWcrGNaD.jpg" alt="Close All">
+    </div>
+
+    <script>
+        // Array of random questions
+        const questions = [
+            "Was war der peinlichste Moment deines Lebens?",
+  "Hattest du jemals einen komischen Crush auf eine berühmte Persönlichkeit?",
+  "Was ist das Verrückteste, das du jemals für jemanden getan hast?",
+  "Hast du jemals etwas Wichtiges verloren und es dann geheim gehalten?",
+  "Was ist deine größte Unsicherheit?",
+  "Wenn du die Zeit zurückdrehen könntest, was würdest du anders machen?",
+  "Was ist das Schönste, was du je über dich selbst gehört hast?",
+  "Hattest du jemals einen Alptraum, an den du dich immer noch erinnerst?",
+  "Gibt es etwas, das du bei uns in der Beziehung gern ändern würdest?",
+  "Was ist das Geheimnis, das du noch nie jemandem erzählt hast?",
+  "Gibt es etwas, das du nicht magst, aber trotzdem machst, um mir zu gefallen?",
+  "Wer war dein schlimmster Kuss?",
+  "Hast du jemals bei einem Date geschwindelt, um besser dazustehen?",
+  "Glaubst du an Liebe auf den ersten Blick?",
+  "Was war dein erster Eindruck von mir?",
+  "Was findest du an mir am attraktivsten?",
+  "Was war dein peinlichstes WhatsApp-Nachrichten-Missverständnis?",
+  "Hast du eine heimliche Leidenschaft, von der niemand weiß?",
+  "Welchen Beruf wolltest du als Kind haben?",
+  "Was würdest du machen, wenn du eine Million Euro gewinnen würdest?",
+  "Was würdest du tun, wenn du für einen Tag ein Mann wärst?",
+  "Würdest du jemals ein Geheimnis von einem Freund vor mir verbergen?",
+  "Wie sieht ein perfekter Tag für dich aus?",
+  "Hast du jemals etwas gestohlen? Wenn ja, was?",
+  "Welches Essen würdest du niemals probieren?",
+  "Was war das Verrückteste, das du je getan hast, um Aufmerksamkeit zu bekommen?",
+  "Hast du ein geheimes Talent?",
+  "Was ist das Romantischste, was jemand für dich getan hat?",
+  "Was würdest du am liebsten über dich selbst ändern?",
+  "Hast du jemals einen Horrorfilm gesehen und danach nicht schlafen können?",
+  "Was denkst du wirklich über meine Freunde?",
+  "Was würdest du in unserem Leben gern gemeinsam erleben?",
+  "Hattest du jemals einen peinlichen Mode-Fauxpas?",
+  "Hast du eine Lieblingsfantasie?",
+  "Hast du jemals aus Eifersucht überreagiert?",
+  "Was ist dein größtes Ziel im Leben?",
+  "Was findest du am spannendsten an Beziehungen?",
+  "Was magst du an deinem Aussehen am liebsten?",
+  "Wenn du einen Tag in meinem Körper verbringen könntest, was würdest du tun?",
+  "Was war die schlechteste Entscheidung, die du je getroffen hast?",
+  "Hast du jemals eine Freundschaft beendet? Wenn ja, warum?",
+  "Hattest du als Kind einen imaginären Freund?",
+  "Welches ist das schönste Kompliment, das du je bekommen hast?",
+  "Was magst du an mir, das du anderen bisher nicht erzählt hast?",
+  "Hast du jemals für etwas gelogen, was du getan hast?",
+  "Was ist etwas, das du nur mir erzählst?",
+  "Glaubst du, dass man aus Fehlern lernt?",
+  "Was ist das Verrückteste, das du in einem anderen Land gemacht hast?",
+  "Würdest du jemals eine Fernbeziehung versuchen?",
+  "Was ist das Peinlichste, was dir in der Öffentlichkeit passiert ist?"
+        ];
+
+        // Function to show the selected content div
+        function showContent(index) {
+            closeAll(); // Close any open div first
+            document.getElementById(`content${index}`).style.display = 'flex';
+            if (index === 1) startCounter();
+        }
+
+        // Function to close all content divs and show the grid
+        function closeAll() {
+            document.querySelectorAll('.content-div').forEach(div => div.style.display = 'none');
+            stopCounter();
+        }
+
+        // Counter code
+        let counterInterval;
+        function startCounter() {
+            const startDate = new Date('May 10, 2024').getTime();
+            counterInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = now - startDate;
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('counter').textContent = `${days} Tage ${hours} Stunden ${minutes} Minuten ${seconds} Sekunden`;
+            }, 1000);
+        }
+
+        function stopCounter() {
+            clearInterval(counterInterval);
+        }
+
+        // Function to display a random question
+        function displayRandomQuestion() {
+            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+            document.getElementById('questionDisplay').textContent = randomQuestion;
+        }
+      closeAll()
+    </script>
+
+</body>
+</html>
