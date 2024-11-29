@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+    <title>Adventskalendar</title>
+    <style>
+    h1{
+      transform: scaleY(1.5);
+      font-weight: normal;
+
+    }
+    body {
+       font-family: Arial, sans-serif;
+       display: flex;
+       flex-direction: column;
+       align-items: center;
+       margin: 0;
+       padding: 0;
+       background-color: white;
+   }
+
+   .calendar {
+       display: grid;
+       grid-template-columns: 1fr; /* Single column for mobile optimization */
+       gap: 10px;
+       width: 90%;
+       max-width: 400px;
+       margin-top: 20px;
+   }
+
+   .door {
+       position: relative;
+       background-color: hotpink;
+       color: #fff;
+       font-size: 1.5em;
+       font-weight: bold;
+       text-align: center;
+       border: 2px solid hotpink;
+       border-radius: 8px;
+       cursor: pointer;
+       overflow: hidden;
+       padding: 10px;
+       box-sizing: border-box;
+   }
+
+   .door.locked {
+       background-color: #aaa;
+       cursor: not-allowed;
+   }
+
+   .door.open span {
+       display: none; /* Hide the door number when open */
+   }
+
+   .door-content {
+       display: none;
+       position: relative;
+       background: #fff;
+       color: #000;
+       border: 2px solid hotpink;
+       border-radius: 8px;
+       box-sizing: border-box;
+       overflow: hidden; /* Prevent overflow for images/videos */
+   }
+
+   .door-content img,
+   .door-content video {
+       width: 100%;
+       height: auto;
+       object-fit: cover;
+   }
+
+   .door.open .door-content {
+       display: block;
+   }
+
+   /* Door animation */
+   .door.open::after {
+       content: '';
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       min-height: 300px;
+       background-color: hotpink
+       border: 2px solid hotpink;
+       border-radius: 8px;
+       z-index: 10; /* Ensures it is above other doors */
+       animation: fallDown 0.5s ease forwards;
+   }
+
+        @keyframes fallDown {
+            0% {
+                transform: scale(1.2) rotate(10deg) translateY(0);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Filys Adventskalender</h1>
+    <div class="calendar" id="calendar">
+        <!-- Doors will be generated here by JavaScript -->
+    </div>
+
+    <script>
+        const calendar = document.getElementById('calendar');
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth(); // 0 = Jan, 11 = Dec
+        const currentDate = today.getDate();
+
+        // Advent calendar content
+        const doors = [
+            "<img src='filybrief1.jpg' alt='Day 1 Image'>",
+            "<img src='filylolosanriobad.jpg' alt='Day 2 Image'>",
+            "<audio controls><source src='path-to-audio.mp3' type='audio/mpeg'></audio>",
+            "<video controls><source src='path-to-video.mp4' type='video/mp4'></video>",
+            "<p>Day 5 surprise!</p>",
+            "<img src='https://via.placeholder.com/150' alt='Day 6 Image'>",
+            "<p>Day 7 content here.</p>",
+            "<p>Day 8 content here.</p>",
+            "<p>Day 9 content here.</p>",
+            "<p>Day 10 content here.</p>",
+            "<p>Day 11 content here.</p>",
+            "<p>Day 12 content here.</p>",
+            "<p>Day 13 content here.</p>",
+            "<p>Day 14 content here.</p>",
+            "<p>Day 15 content here.</p>",
+            "<p>Day 16 content here.</p>",
+            "<p>Day 17 content here.</p>",
+            "<p>Day 18 content here.</p>",
+            "<p>Day 19 content here.</p>",
+            "<p>Day 20 content here.</p>",
+            "<p>Day 21 content here.</p>",
+            "<p>Day 22 content here.</p>",
+            "<p>Day 23 content here.</p>",
+            "<p>Day 24 content here.</p>",
+        ];
+
+        for (let i = 0; i < 24; i++) {
+            const day = i + 1;
+            const door = document.createElement('div');
+            door.classList.add('door');
+
+            const doorContent = document.createElement('div');
+            doorContent.classList.add('door-content');
+            doorContent.innerHTML = doors[i] || `<p>No content for Day ${day}</p>`;
+
+            // Mark doors as locked, pre-opened, or default
+            if (currentYear === 2024 && currentMonth === 11) {
+                if (currentDate > day) {
+                    // Automatically open doors for previous dates
+                    door.classList.add('open');
+                } else if (currentDate < day) {
+                    // Lock doors for future dates
+                    door.classList.add('locked');
+                }
+            } else {
+                // Lock all doors if it's not December 2024
+                door.classList.add('locked');
+            }
+
+            door.innerHTML = `<span>${day}</span>`;
+            door.appendChild(doorContent);
+
+            door.addEventListener('click', () => {
+                if (!door.classList.contains('locked')) {
+                    door.classList.add('open');
+                }
+            });
+
+            calendar.appendChild(door);
+        }
+    </script>
+</body>
+</html>
