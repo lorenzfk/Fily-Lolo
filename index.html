@@ -98,7 +98,7 @@
             <p>Wahrheit</p>
         </div>
         <!-- Image 3 -->
-        <div class="grid-item" onclick="showContent(3)">
+        <div class="grid-item" onclick="advent()">
             <img src="https://github.com/lorenzfk/justTest/blob/master/weihnachti.png?raw=true" alt="Image 3">
             <p>Adventskalender</p>
         </div>
@@ -157,13 +157,13 @@
   "Gibt es etwas, das du nicht magst, aber trotzdem machst, um mir zu gefallen?",
   "Wer war dein schlimmster Kuss?",
 "möchtest du wirklich für immer mit mir?:)",
-            
+
 "möchtest du wirklich für immer mit mir?:)",
-            
+
 "möchtest du wirklich für immer mit mir?:)",
-            
+
 "möchtest du wirklich für immer mit mir?:)",
-            
+
 "möchtest du wirklich für immer mit mir?:)",
   "Hast du jemals bei einem unserer ersten Dates geschwindelt, um besser dazustehen?",
   "Glaubst du an Liebe auf den ersten Blick?",
@@ -234,6 +234,9 @@
         function displayRandomQuestion() {
             const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
             document.getElementById('questionDisplay').textContent = randomQuestion;
+        }
+        function advent(){
+          window.location.replace('calender.html');
         }
       closeAll()
     </script>
