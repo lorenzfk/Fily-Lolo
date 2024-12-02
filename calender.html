@@ -6,12 +6,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-    <title>Adventskalendar</title>
+    <title>Adventskalender</title>
     <style>
     h1{
       transform: scaleY(1.5);
       font-weight: normal;
 
+    }
+    audio{
+      mmix-blend-mode: darken;
+      ffilter: invert();
     }
     body {
        font-family: Arial, sans-serif;
@@ -59,7 +63,8 @@
    .door-content {
        display: none;
        position: relative;
-       background: #fff;
+       background: black
+       padding:0;
        color: #000;
        border: 2px solid hotpink;
        border-radius: 8px;
@@ -68,7 +73,7 @@
    }
 
    .door-content img,
-   .door-content video {
+   .door-content video, audio {
        width: 100%;
        height: auto;
        object-fit: cover;
@@ -120,7 +125,7 @@
         const doors = [
             "<img src='filybrief1.jpg' alt='Day 1 Image'>",
             "<img src='filylolosanriobad.jpg' alt='Day 2 Image'>",
-            "<audio controls><source src='path-to-audio.mp3' type='audio/mpeg'></audio>",
+            "<audio controls><source src='dreidubai.mp3' type='audio/mpeg'></audio><img src='dreidubai.jpg' alt='Day 2 Image'></img>",
             "<video controls><source src='path-to-video.mp4' type='video/mp4'></video>",
             "<p>Day 5 surprise!</p>",
             "<img src='https://via.placeholder.com/150' alt='Day 6 Image'>",
