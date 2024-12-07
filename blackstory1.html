@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black story</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: hotpink;
+        }
+
+        .card-container {
+            perspective: 1000px;
+        }
+
+        .card {
+            width: 300px;
+            height: 400px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            cursor: pointer;
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            padding:1rem;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            text-align:center;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-front img,
+        .card-back img {
+            width: 80%;
+            height: auto;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .card-front {
+            background-color: white;
+        }
+
+        .card-front, .card-back{
+          animation: 'tease' 1s 1s infinite;
+        }
+
+
+        .card-back {
+            background-color: white;
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-container">
+        <div class="card">
+            <div class="card-front">
+                <h2>Schrei im Dunkeln</h2>
+                <img src="vord.jpg" alt="Vorderseite Bild">
+                <p>Sie schrie auf als er sie griff. Sie waren umgeben von Dunkelheit.<br><br>Antimmen zum umdrehen</p>
+            </div>
+            <div class="card-back">
+                <h2>Auflösung</h2>
+                <p>Die beiden Waren im Griechenland Urlaub und der gut gelaunte Kapitän hatte ein junges Paar in einer dunklen Höhle alleingelassen. Sie könnten die Finger nicht voneinander lassen und stöhnten weil der Sex so gut war.</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.querySelector('.card').addEventListener('click', function() {
+            this.classList.toggle('is-flipped');
+        });
+    </script>
+</body>
+</html>
