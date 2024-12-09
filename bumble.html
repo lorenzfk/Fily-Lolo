@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swipe App</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 10px;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+      background-image: url('fakebumble.png');
+      background-repeat: no-repeat;
+      background-size: 100% auto;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .card {
+      position: absolute;
+      bottom:0;
+      left: 0;
+      width: 100%;
+      height: 90%;
+      border-radius: 20px;
+
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 0;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    }
+
+    .card img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .card h2 {
+      position: relative;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+      width: 100%;
+      font-size: 24px;
+      text-align: left;
+      padding: 50px 20px;
+      background: rgb(0,0,0);
+      background: linear-gradient(0deg, rgba(0,0,0,0.49763655462184875) 48%, rgba(0,212,255,0) 100%);
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Cards will be dynamically inserted here -->
+  </div>
+  <script>
+    // Image data array
+    const data = [
+      { url: "bumblenintendo.jpg", name: "Lorenz, 22" },
+      { url: "bumbleistanbul.jpg", name: "Lorenz, 22" },
+      { url: "bumblewanne.jpg", name: "Lorenz, 22" },
+      { url: "bumblekopf.jpg", name: "Lorenz, 22" },
+      { url: "bumblekunststoff.jpg", name: "Lorenz, 22" },
+    ];
+
+    let currentIndex = 0;
+    let currentCard = null; // Reference to the card being swiped
+
+    const app = document.getElementById('app');
+
+    // Initialize cards
+    function loadCards() {
+      app.innerHTML = ''; // Clear existing cards
+      const nextCards = [data[currentIndex % data.length], data[(currentIndex + 1) % data.length]];
+
+      nextCards.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.classList.add('card');
+        card.style.zIndex = nextCards.length - index; // Ensure proper stacking
+        card.innerHTML = `
+          <img src="${item.url}" alt="${item.name}">
+          <h2>${item.name}</h2>
+        `;
+        app.appendChild(card);
+
+        // Set currentCard to the topmost card
+        if (index === 0) {
+          currentCard = card;
+        }
+      });
+    }
+
+    // Track swipe movements
+    let startX = 0, startY = 0;
+
+    function onTouchStart(event) {
+      if (!currentCard) return;
+      const touch = event.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+
+      // Bring current card to the front
+      currentCard.style.zIndex = 10;
+    }
+
+    function onTouchMove(event) {
+      if (!startX || !startY || !currentCard) return;
+
+      const touch = event.touches[0];
+      const diffX = touch.clientX - startX;
+      const diffY = touch.clientY - startY;
+
+      currentCard.style.transform = `translate(${diffX}px, ${diffY}px) rotate(${diffX / 20}deg)`;
+    }
+
+    function onTouchEnd(event) {
+      if (!currentCard) return;
+
+      const rect = currentCard.getBoundingClientRect();
+      const threshold = app.offsetWidth / 4;
+
+      if (rect.left < -threshold || rect.right > window.innerWidth + threshold) {
+        // Swipe completed
+        currentCard.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+        currentCard.style.opacity = '0';
+        currentCard.style.transform = rect.left < -threshold
+          ? 'translate(-100vw, 0) rotate(-20deg)'
+          : 'translate(100vw, 0) rotate(20deg)';
+
+        setTimeout(() => {
+          currentCard.remove();
+          currentIndex++;
+          loadCards();
+        }, 500);
+      } else {
+        // Swipe canceled
+        currentCard.style.transition = 'transform 0.3s ease-out';
+        currentCard.style.transform = 'translate(0, 0) rotate(0deg)';
+      }
+
+      // Reset swipe state
+      startX = 0;
+      startY = 0;
+    }
+
+    // Attach touch event listeners
+    app.addEventListener('touchstart', onTouchStart);
+    app.addEventListener('touchmove', onTouchMove);
+    app.addEventListener('touchend', onTouchEnd);
+
+    // Load the initial set of cards
+    loadCards();
+  </script>
+</body>
+</html>
