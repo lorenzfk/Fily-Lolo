@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        /* General styles */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: hotpink;
+            text-align: center;
+            box-sizing:border-box;
+            padding:0;
+            max-width:100vw;
+            overflow:hidden;
+        }
+
+        .quiz-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+        }
+
+        .question {
+            width: 80%;
+            height: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            transform:scaleY(1.5);
+        }
+
+        .answers {
+            width: 80%;
+            height: 50%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 10px;
+            padding-bottom:20px;
+        }
+
+        .answer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #333;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .answer:hover {
+            background-color: #555;
+        }
+
+        .answer.correct {
+            background-color: green;
+        }
+
+        .answer.wrong {
+            background-color: red;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .result {
+          width:100%;
+            font-size: 2rem;
+            color: #333;
+            margin-top: 20px;
+            padding:20px;
+        }
+
+        .result img {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Question Section -->
+        <div id="question" class="question">Question will appear here</div>
+
+        <!-- Answers Section -->
+        <div id="answers" class="answers">
+            <div class="answer" onclick="selectAnswer(0)">Answer 1</div>
+            <div class="answer" onclick="selectAnswer(1)">Answer 2</div>
+            <div class="answer" onclick="selectAnswer(2)">Answer 3</div>
+            <div class="answer" onclick="selectAnswer(3)">Answer 4</div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Wo war Filys und Lolos erstes Date?",
+                answers: ["Miniaturwunderland", "Kino", "Museum", "Schokoversum"],
+                correct: 2
+            },
+            {
+                question: "Was ist das Lieblingscafe von Fily und Lolo?",
+                answers: ["Knuth", "Marysol", "Starbucks", "Cafe Extrablatt"],
+                correct: 1
+            },
+            {
+                question: "Was wird bei Fabios Fischrestaurant serviert?",
+                answers: ["Sushi", "Burger", "Pizza", "Fusion-Küche"],
+                correct: 3
+            }
+        ];
+
+        const results = [
+            "Das kannst du besser!",
+            "Du kennst dich ein wenig mit Fily und Lolo aus, kannst aber noch viel lernen!",
+            "Du kennst dich schon gut mit Fily und Lolo aus, kannst aber noch Einiges lernen!",
+            "Du kennst dich sehr gut Fily und Lolo aus - ein wahrer Fan!"
+        ];
+
+        const resultImages = [
+            "quiz_fail.png",
+            "quiz_0.png",
+            "quiz_1.png",
+            "quiz_2.png"
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const questionDiv = document.getElementById("question");
+        const answersDiv = document.getElementById("answers");
+        const answerElements = document.querySelectorAll(".answer");
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            questionDiv.textContent = q.question;
+            q.answers.forEach((answer, index) => {
+                answerElements[index].textContent = answer;
+                answerElements[index].classList.remove("correct", "wrong");
+            });
+        }
+
+        function selectAnswer(index) {
+            const correctIndex = questions[currentQuestionIndex].correct;
+            if (index === correctIndex) {
+                answerElements[index].classList.add("correct");
+                score++;
+            } else {
+                answerElements[index].classList.add("wrong");
+                answerElements[correctIndex].classList.add("correct");
+            }
+
+            // Wait 1.5 seconds and move to the next question or show results
+            setTimeout(() => {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    loadQuestion();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+
+        function showResults() {
+            document.querySelector(".quiz-container").innerHTML = `
+                <img style="max-width:250px" src="${resultImages[score]}" alt="Result Image">
+                <div class='result'>Dein Score: ${score} / ${questions.length}</div>
+                <div class='result'>${results[score]}</div>
+            `;
+        }
+
+        // Initialize the first question
+        loadQuestion();
+    </script>
+</body>
+</html>
