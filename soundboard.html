@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soundboard</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .soundboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .button {
+            padding: 20px;
+            text-align: center;
+            background-color: #007BFF;
+            color: white;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.1s ease, background-color 0.3s ease;
+        }
+
+        .button:active {
+            transform: scale(0.95);
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="soundboard">
+        <button class="button" onclick="playSound('sound')">Sound 1</button>
+        <button class="button" onclick="playSound('sound2')">Sound 2</button>
+        <button class="button" onclick="playSound('sound3')">Sound 3</button>
+        <button class="button" onclick="playSound('sound4')">Sound 4</button>
+        <button class="button" onclick="playSound('sound5')">Sound 5</button>
+        <button class="button" onclick="playSound('sound6')">Sound 6</button>
+        <button class="button" onclick="playSound('sound7')">Sound 7</button>
+        <button class="button" onclick="playSound('sound8')">Sound 8</button>
+        <button class="button" onclick="playSound('sound9')">Sound 9</button>
+    </div>
+
+    <script>
+        function playSound(sound) {
+            const audio = new Audio(`${sound}.mp3`);
+            audio.play();
+        }
+    </script>
+</body>
+</html>
