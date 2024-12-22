@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soundboard</title>
+    <title>Lolo Soundboard</title>
     <style>
         body {
             display: flex;
@@ -11,28 +11,40 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-color: hotpink;
             font-family: Arial, sans-serif;
         }
 
         .soundboard {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             width: 90%;
             max-width: 400px;
         }
 
         .button {
-            padding: 20px;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             background-color: #007BFF;
-            color: white;
-            font-size: 1.2rem;
             border: none;
             border-radius: 10px;
+            padding-top:50%;
             cursor: pointer;
+            overflow: hidden;
+            position: relative;
+            height:200px;
             transition: transform 0.1s ease, background-color 0.3s ease;
+        }
+
+        .button img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         .button:active {
@@ -42,16 +54,20 @@
     </style>
 </head>
 <body>
+  <a id="back" style="position:fixed; bottom:1rem;width:100vw;left:0;text-align:center;font-size:2rem" href="calender.html"> zurück</a>
     <div class="soundboard">
-        <button class="button" onclick="playSound('sound')">Sound 1</button>
-        <button class="button" onclick="playSound('sound2')">Sound 2</button>
-        <button class="button" onclick="playSound('sound3')">Sound 3</button>
-        <button class="button" onclick="playSound('sound4')">Sound 4</button>
-        <button class="button" onclick="playSound('sound5')">Sound 5</button>
-        <button class="button" onclick="playSound('sound6')">Sound 6</button>
-        <button class="button" onclick="playSound('sound7')">Sound 7</button>
-        <button class="button" onclick="playSound('sound8')">Sound 8</button>
-        <button class="button" onclick="playSound('sound9')">Sound 9</button>
+        <button class="button" onclick="playSound('liebe')">
+            <img src="aliebe.jpg" alt="Sound 1">
+        </button>
+        <button class="button" onclick="playSound('hase')">
+            <img src="ahase.jpg" alt="Sound 2">
+        </button>
+        <button class="button" onclick="playSound('vermisse')">
+            <img src="avermisse.jpg" alt="Sound 3">
+        </button>
+        <button class="button" onclick="playSound('traumfrau')">
+            <img src="atraumfrau.jpg" alt="Sound 4">
+        </button>
     </div>
 
     <script>
