@@ -5,6 +5,7 @@ let scene, camera, renderer, ambientLight, directionalLight;
 let waterMesh, normalMap1, normalMap2;
 let currentObject = null, objectList = [], objectCounter = 1;
 
+const cp = document.querySelector('.controls-panels');
 // scroll speeds for the two normal maps
 const scrollSpeed1 = new THREE.Vector2(0.001,  0.0005);
 const scrollSpeed2 = new THREE.Vector2(-0.0007, -0.0003);
@@ -95,6 +96,9 @@ function init() {
   directionalLight = new THREE.DirectionalLight(0xffffff, 1);
   directionalLight.position.set(10, 10, 10).normalize();
   scene.add(ambientLight, directionalLight);
+    // enable OrbitControls
+    const controls = new THREE.OrbitControls( camera, renderer.domElement );
+controls.enableDamping = true;  // optional, gives a nice inertial feel
 
   createWaterSurface();
 
@@ -106,6 +110,12 @@ function init() {
 
   animate();
 }
+// remove “cBig” when the viewport is clicked
+document.getElementById('sceneViewer').addEventListener('click', () => {
+    cp.scrollTop=0;
+  document.querySelector('.controls-panels').classList.remove('cBig');
+});
+
 
 function animate() {
   requestAnimationFrame(animate);
@@ -250,7 +260,7 @@ function selectObjectFromOutliner(obj) {
     .forEach(li => li.style.color = 'white');
   const sel = Array.from(document.getElementById('outlinerList').children)
     .find(li => li.textContent === obj.name);
-  if (sel) sel.style.color = 'red';
+  if (sel) sel.style.color = 'yellow!important';
 }
 
 function addToOutliner(obj) {
@@ -323,7 +333,7 @@ function updateMaterialColor() {
 // Panel Scroll Shrink/Expand
 // ───────────────────────────────────────────────
 function handlePanelScroll() {
-  const cp = document.querySelector('.controls-panels');
+  
   if (cp.scrollTop > 20) cp.classList.add('cBig');
   else              cp.classList.remove('cBig');
 }
@@ -371,4 +381,41 @@ window.addEventListener('resize', () => {
   renderer.setSize(cv.clientWidth, cv.clientHeight);
   camera.aspect = cv.clientWidth / cv.clientHeight;
   camera.updateProjectionMatrix();
+});
+
+// Hook up your new "Add Image" button
+document.getElementById('btn-add-image').addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = event => {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        // compute plane size based on a fixed width
+        const width = 5;
+        const height = width * (img.height / img.width);
+        const texture = new THREE.Texture(img);
+        texture.needsUpdate = true;
+
+        const geometry = new THREE.PlaneGeometry(width, height);
+        const material = new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true
+        });
+        const plane = new THREE.Mesh(geometry, material);
+
+        scene.add(plane);
+        plane.name = `#${objectCounter++} Image`;
+        addToOutliner(plane);
+        selectObjectFromOutliner(plane);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  input.click();
 });

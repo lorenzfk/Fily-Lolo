@@ -20,36 +20,36 @@
       <!-- Controls Panel -->
       <div class="panel" id="controlsPanel">
         <div class="panel-top">
-          <h3>add</h3>
+          <h3>add object</h3>
           <img src="eye-open.png"
                class="minimize-button"
                data-panel="controlsPanel"
                alt="Show/Hide Properties">
         </div>
-        <div class="panel-content">
+        <div class="panel-content" style="justify-content:space-beween;">
           <img src="add-cube.png"   id="btn-add-cube"   alt="Add Cube">
           <img src="add-sphere.png" id="btn-add-sphere" alt="Add Sphere">
           <img src="add-mesh.png"   id="btn-add-gltf"   alt="Add 3D Model">
+          <img src="add-image.png"   id="btn-add-image"   alt="Add Image As Plane">
         </div>
       </div>
       <div class="panel" id="outlinerPanel">
         <div class="panel-top">
-          <h3>outliner</h3>
+          <h3>scene outliner</h3>
           <img src="eye-open.png"
                class="minimize-button"
                data-panel="outlinerPanel"
                alt="Show/Hide Properties">
         </div>
         <div class="panel-content">
-          <ul id="outlinerList">
-            <span>No Objects Yet...</span>
+          <ul id="outlinerList" style="display:flex; flex-direction:column">
           </ul>
         </div>
       </div>
       <!-- Properties Panel -->
       <div class="panel smol" id="propertiesPanel">
         <div class="panel-top">
-          <h3>properties</h3>
+          <h3>object properties</h3>
           <img src="eye-closed.png"
                class="minimize-button"
                data-panel="propertiesPanel"

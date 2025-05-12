@@ -1,5 +1,6 @@
 /* General Styles */
 * {
+  
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -42,10 +43,12 @@ margin:10px;
 /* Viewport Container */
 .viewport-container {
   overflow: hidden;
-  width: 80%; /* Viewport width */
+  width: calc(100vw - 35px); /* Viewport width */
   height: 60%; /* Viewport max height */
   position: relative;
   border: 2px solid white;
+  border-radius: 5px;
+  box-shadow: 0px 10px 10px RGBA(0,0,0,.3);
 }
 
 /* Viewport Section (Fixed at top, behind panels) */
@@ -77,7 +80,7 @@ margin:10px;
 }
 .cBig{
   border-top:4px solid white;
- height:60%!important;
+ height:66%!important;
 }
 #outlfinerPanel{
   background-color: RGBA(0,0,0,0);
@@ -168,4 +171,38 @@ input{
 
 .minimize-button:hover {
   background-color: #d4d400;
+}
+
+/* Force pixelated rendering on images, canvas, video… */
+img, canvas, video {
+  image-rendering: optimizeSpeed;            /* Older browsers */
+  image-rendering: -moz-crisp-edges;         /* Firefox */
+  image-rendering: -o-crisp-edges;           /* Opera */
+  image-rendering: -webkit-optimize-contrast;/* WebKit (Safari/Chrome) */
+  image-rendering: pixelated;                /* Chrome */
+  image-rendering: crisp-edges;              /* CSS4 draft */
+}
+/* ─── Scale all text vertically & force normal weight ─── */
+body, body * {
+  font-weight: normal !important;
+  letter-spacing: .4px;
+}
+h3{
+}
+/* Only apply vertical scaling to text elements */
+p, h1, h2, h3, h4, h5, h6,
+span, a, li, label, button, input, textarea {
+  display: inline-block;      /* needed so transform only affects text */
+  transform: scaleY(1.2) scaleX(0.8);
+  transform-origin: center;      /* keep flow from the top edge */
+}
+p, h1, h2, h3, h4, h5, h6,
+span, a, li, label, button, img{
+  user-select: none;
+}
+.controls-panels img{
+  transition:.2s;
+}
+.controls-panels img:hover{
+  transform:scale(1.2)!important;
 }
