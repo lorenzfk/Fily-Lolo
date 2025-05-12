@@ -1,0 +1,132 @@
+ive updated the css like this:/* General Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000000; /* Black background for UI */
+  font-family: Arial, sans-serif;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* Viewport Container */
+.viewport-container {
+  width: 80%; /* Viewport width */
+  height: 60%; /* Viewport max height */
+  position: relative;
+}
+
+/* Viewport Section (Fixed at top, behind panels) */
+#sceneViewer {
+  width: 100%;
+  height: 100%;
+  background-color: #1d1f23;
+  border-radius: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0; /* Ensure it's behind the panels */
+}
+
+/* Controls and Panels Section */
+.controls-panels {
+  width: 80%; /* Same as viewport */
+  margin-top: 10%;
+  z-index:99;
+  height:33%;
+  bottom:0;
+  position: fixed;
+  overflow-y: scroll;
+}
+.outlinerPanel{
+  width: 80%; /* Same as viewport */
+  margin-top: 10%;
+  z-index:99;
+  height:20%;
+  top:20%;
+  position: fixed!important;
+  overflow-y: scroll;
+}
+/* Panels (Outliner, Properties, World, etc.) */
+.panel {
+  width: 100%; /* Full width */
+  background-color: rgba(0, 0, 0, 0.8); /* Black background */
+  color: white; /* White text */
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 10px;
+  z-index: 2; /* Ensure panels are above the viewport */
+  display: block; /* Ensure they're visible by default */
+}
+
+.panel h3 {
+  margin-bottom: 10px;
+}
+
+.panel button {
+  background-color: #ffffff; /* White buttons */
+  color: black;
+  border: none;
+  padding: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.panel button:hover {
+  background-color: #d4d400; /* Yellow hover effect */
+}
+
+/* Outliner Section */
+#outliner {
+  display: block;
+  max-height: 30%;
+  overflow-y: auto;
+}
+
+/* Properties Section */
+#properties {
+  display: block;
+  max-height: 50%;
+  overflow-y: auto;
+}
+
+/* World Section */
+#world {
+  display: block;
+}
+
+/* Minimize Button Styles */
+.minimize-button {
+  background-color: #ffffff; /* White button for minimize */
+  color: black;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.minimize-button:hover {
+  background-color: #d4d400; please add the add image functionality back in, and the option to select an object in the outliner.
+ChatGPT:

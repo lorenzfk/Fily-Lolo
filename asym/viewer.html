@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASM Viewer</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+
+  <script>
+    let scene, camera, renderer;
+
+    // Initialize the scene
+    function init() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const loader = new THREE.GLTFLoader();
+      const url = prompt("Enter the URL of the .gltf file to view:");
+      loader.load(url, function(gltf) {
+        scene.add(gltf.scene);
+      });
+
+      camera.position.z = 5;
+      animate();
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
+
+    init();
+  </script>
+</body>
+</html>
+<style media="screen">
+body {
+font-family: Arial, sans-serif;
+background-color: #f4f4f4;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+margin: 0;
+}
+
+.container {
+text-align: center;
+}
+
+h1 {
+color: #333;
+margin-bottom: 20px;
+}
+
+.button-container {
+display: flex;
+gap: 20px;
+justify-content: center;
+}
+
+button {
+padding: 15px 30px;
+font-size: 18px;
+cursor: pointer;
+background-color: #007BFF;
+color: white;
+border: none;
+border-radius: 5px;
+}
+
+button:hover {
+background-color: #0056b3;
+}
+
+</style>
