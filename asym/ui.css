@@ -207,3 +207,13 @@ span, a, li, label, button, img{
 .controls-panels img:hover{
   transform:scale(1.2)!important;
 }
+
+#joystick-container {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 150px;
+  height: 150px;
+  touch-action: none;       /* prevent page scroll while dragging */
+  z-index: 1000;             /* on top of everything */
+}

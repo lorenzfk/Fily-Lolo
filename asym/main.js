@@ -4,6 +4,70 @@
 let scene, camera, renderer, ambientLight, directionalLight;
 let waterMesh, normalMap1, normalMap2;
 let currentObject = null, objectList = [], objectCounter = 1;
+let joystickManager = null;
+
+function selectObjectFromOutliner(obj) {
+  // … your existing selection code …
+
+  // tear down any old joystick
+  if (joystickManager) {
+    joystickManager.destroy();
+    joystickManager = null;
+    document.getElementById('joystick-zone').style.display = 'none';
+  }
+
+  if (obj) {
+    // show the zone
+    const zone = document.getElementById('joystick-zone');
+    zone.style.display = 'block';
+
+    // init nipplejs
+    joystickManager = nipplejs.create({
+      zone,
+      mode: 'static',
+      position: { left: '75px', bottom: '75px' },
+      color: 'white',
+      size: 120
+    });
+
+    // speed in world‐units per frame
+    const speed = 0.1;
+
+    joystickManager.on('move', (evt, data) => {
+      if (!data.vector) return;
+      // forward/back = y axis of joystick
+      const fwd = data.vector.y;     // –1 → push forward
+      // left/right = x axis of joystick
+      const strafe = data.vector.x;  // –1 → push left
+
+      // move along camera forward
+      const forwardDir = new THREE.Vector3();
+      camera.getWorldDirection(forwardDir);
+      forwardDir.y = 0; // lock to horizontal
+      forwardDir.normalize();
+
+      // right vector
+      const rightDir = new THREE.Vector3();
+      rightDir.crossVectors(forwardDir, camera.up).normalize();
+
+      // apply translation
+      obj.position.addScaledVector(forwardDir, -fwd * speed);
+      obj.position.addScaledVector(rightDir,  strafe * speed);
+
+      // update controls panel (if desired)
+      if (obj === currentObject) {
+        document.getElementById('posX').value = obj.position.x.toFixed(3);
+        document.getElementById('posY').value = obj.position.y.toFixed(3);
+        document.getElementById('posZ').value = obj.position.z.toFixed(3);
+      }
+    });
+
+    // hide on end
+    joystickManager.on('end', () => {
+      // nothing to do for now
+    });
+  }
+}
 
 const cp = document.querySelector('.controls-panels');
 // scroll speeds for the two normal maps
@@ -419,3 +483,4 @@ document.getElementById('btn-add-image').addEventListener('click', () => {
   };
   input.click();
 });
+
