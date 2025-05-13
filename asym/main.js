@@ -4,105 +4,50 @@
 let scene, camera, renderer, ambientLight, directionalLight;
 let waterMesh, normalMap1, normalMap2;
 let currentObject = null, objectList = [], objectCounter = 1;
-let joystickManager = null;
-
-function selectObjectFromOutliner(obj) {
-  // … your existing selection code …
-
-  // tear down any old joystick
-  if (joystickManager) {
-    joystickManager.destroy();
-    joystickManager = null;
-    document.getElementById('joystick-zone').style.display = 'none';
-  }
-
-  if (obj) {
-    // show the zone
-    const zone = document.getElementById('joystick-zone');
-    zone.style.display = 'block';
-
-    // init nipplejs
-    joystickManager = nipplejs.create({
-      zone,
-      mode: 'static',
-      position: { left: '75px', bottom: '75px' },
-      color: 'white',
-      size: 120
-    });
-
-    // speed in world‐units per frame
-    const speed = 0.1;
-
-    joystickManager.on('move', (evt, data) => {
-      if (!data.vector) return;
-      // forward/back = y axis of joystick
-      const fwd = data.vector.y;     // –1 → push forward
-      // left/right = x axis of joystick
-      const strafe = data.vector.x;  // –1 → push left
-
-      // move along camera forward
-      const forwardDir = new THREE.Vector3();
-      camera.getWorldDirection(forwardDir);
-      forwardDir.y = 0; // lock to horizontal
-      forwardDir.normalize();
-
-      // right vector
-      const rightDir = new THREE.Vector3();
-      rightDir.crossVectors(forwardDir, camera.up).normalize();
-
-      // apply translation
-      obj.position.addScaledVector(forwardDir, -fwd * speed);
-      obj.position.addScaledVector(rightDir,  strafe * speed);
-
-      // update controls panel (if desired)
-      if (obj === currentObject) {
-        document.getElementById('posX').value = obj.position.x.toFixed(3);
-        document.getElementById('posY').value = obj.position.y.toFixed(3);
-        document.getElementById('posZ').value = obj.position.z.toFixed(3);
-      }
-    });
-
-    // hide on end
-    joystickManager.on('end', () => {
-      // nothing to do for now
-    });
-  }
-}
-
-const cp = document.querySelector('.controls-panels');
-// scroll speeds for the two normal maps
-const scrollSpeed1 = new THREE.Vector2(0.001,  0.0005);
+const scrollSpeed1 = new THREE.Vector2(0.001, 0.0005);
 const scrollSpeed2 = new THREE.Vector2(-0.0007, -0.0003);
 
+// random hex color
 function getRandomColor() {
-  const randomColor = Math.floor(Math.random() * 0xFFFFFF).toString(16);
-  return `#${randomColor.padStart(6, '0')}`;
+  const rnd = Math.floor(Math.random() * 0xFFFFFF).toString(16);
+  return `#${rnd.padStart(6,'0')}`;
 }
 
+// make that image your skybox (equirectangular)
+new THREE.TextureLoader().load(
+  'sky.jpg',
+  texture => {
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    texture.encoding = renderer.outputEncoding; // match your renderer
+    scene.background = texture;
+  }
+);
+
+// env map loader
 function g_texture() {
   return new THREE.TextureLoader().load(
-    'https://as2.ftcdn.net/v2/jpg/02/57/17/65/1000_F_257176513_GfJoMbU5RrRZoXDgs8pajKzOOpRv7K7E.jpg',
+    'sky.jpg',
     tex => {
-      tex.mapping     = THREE.EquirectangularRefractionMapping;
-      tex.anisotropy  = renderer.capabilities.getMaxAnisotropy();
-      tex.magFilter   = THREE.NearestFilter;
-      tex.minFilter   = THREE.LinearMipmapLinearFilter;
+      tex.mapping = THREE.EquirectangularRefractionMapping;
+      tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      tex.magFilter = THREE.NearestFilter;
+      tex.minFilter = THREE.LinearMipmapLinearFilter;
       tex.wrapS = tex.wrapT = THREE.MirroredRepeatWrapping;
-      tex.repeat.set(0.9, 0.9);
+      tex.repeat.set(0.9,0.9);
     }
   );
 }
 
 // ───────────────────────────────────────────────
-// Build water plane + CubeCamera reflections
+// Build water surface + CubeCamera reflections
 // ───────────────────────────────────────────────
 function createWaterSurface() {
   const loader = new THREE.TextureLoader();
   normalMap1 = loader.load('https://threejs.org/examples/textures/waternormals.jpg');
   normalMap2 = loader.load('https://threejs.org/examples/textures/waternormals.jpg');
-  [normalMap1, normalMap2].forEach(t => {
+  [normalMap1,normalMap2].forEach(t=>{
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    t.repeat.set(40, 40);
+    t.repeat.set(40,40);
   });
 
   const cubeRT = new THREE.WebGLCubeRenderTarget(256, {
@@ -113,30 +58,23 @@ function createWaterSurface() {
   });
 
   const mat = new THREE.MeshPhysicalMaterial({
-    color:            0xffffff,
-    metalness:        1.0,
-    transmission:1.0,
-    ior: 1.4,
-    roughness:        0.1,
-    glass: 0.9,
-    specular: 0.1,
-    thickness: 1.0,
-    dither: true,
-    reflex:.5,
-    envMap:           g_texture(),
-    envMapIntensity:  1.5,
-    normalMap:        normalMap1,
-    bumpMap:          normalMap2,
-    bumpScale:        0.5
+    color:       0xffffff,
+    metalness:   1.0,
+    roughness:   0.1,
+    envMap:      g_texture(),
+    envMapIntensity: 0.9,
+    normalMap:   normalMap1,
+    bumpMap:     normalMap2,
+    bumpScale:   0.5
   });
 
-  const geo = new THREE.PlaneGeometry(200, 130);
+  const geo = new THREE.PlaneGeometry(400,400);
   waterMesh = new THREE.Mesh(geo, mat);
   waterMesh.rotation.x = -Math.PI/2 + 0.05;
-  waterMesh.position.y = -7;
+  waterMesh.position.y = -2;
   scene.add(waterMesh);
 
-  const cubeCam = new THREE.CubeCamera(0.1, 1000, cubeRT);
+  const cubeCam = new THREE.CubeCamera(0.1,1000,cubeRT);
   cubeCam.position.copy(waterMesh.position);
   scene.add(cubeCam);
   waterMesh.userData.cubeCamera = cubeCam;
@@ -150,57 +88,69 @@ function init() {
   camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
   camera.position.z = 10;
 
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio); 
   const cv = document.getElementById('sceneViewer');
   renderer.setSize(cv.clientWidth, cv.clientHeight);
+  {
+  const w = sceneViewer.clientWidth;
+  const h = sceneViewer.clientHeight;
+  renderer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
   cv.appendChild(renderer.domElement);
 
   scene.background = new THREE.Color('#008080');
-  ambientLight = new THREE.AmbientLight('#008080F', 0.5);
-  directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-  directionalLight.position.set(10, 10, 10).normalize();
+  ambientLight   = new THREE.AmbientLight('#008080F', 0.5);
+  directionalLight = new THREE.DirectionalLight(0xffffff,1);
+  directionalLight.position.set(10,10,10).normalize();
   scene.add(ambientLight, directionalLight);
-    // enable OrbitControls
-    const controls = new THREE.OrbitControls( camera, renderer.domElement );
-controls.enableDamping = true;  // optional, gives a nice inertial feel
+  scene.fog = new THREE.FogExp2(scene.background.color, 0.003);
+  renderer.setClearColor(scene.background.color);
+  
+  // re-enable OrbitControls
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
 
   createWaterSurface();
 
-  // collapse all "smol" panels initially
-  document.querySelectorAll('.smol').forEach(panel => {
+  // collapse all “smol” panels initially
+  document.querySelectorAll('.smol').forEach(panel=>{
     panel.querySelector('.panel-content').style.display = 'none';
     panel.querySelector('img.minimize-button').src = 'eye-closed.png';
   });
 
   animate();
 }
-// remove “cBig” when the viewport is clicked
-document.getElementById('sceneViewer').addEventListener('click', () => {
-    cp.scrollTop=0;
-  document.querySelector('.controls-panels').classList.remove('cBig');
-});
 
+// remove “cBig” and hide joystick when you click the canvas
+document.getElementById('sceneViewer').addEventListener('click', ()=>{
+  document.querySelector('.controls-panels').classList.remove('cBig');
+  hideJoystick();
+});
 
 function animate() {
   requestAnimationFrame(animate);
-
   // scroll normals
   if (normalMap1 && normalMap2) {
     normalMap1.offset.add(scrollSpeed1);
     normalMap2.offset.add(scrollSpeed2);
   }
-
-  // update reflections
-  if (waterMesh && waterMesh.userData.cubeCamera) {
+  // update cube-camera reflections
+  if (waterMesh?.userData.cubeCamera) {
     const cc = waterMesh.userData.cubeCamera;
     waterMesh.visible = false;
     cc.position.copy(waterMesh.position);
     cc.update(renderer, scene);
     waterMesh.visible = true;
   }
-
+  
   renderer.render(scene, camera);
 }
+
+// kick it all off
+init();
 // ───────────────────────────────────────────────
 // Panel Toggles & Properties
 // ───────────────────────────────────────────────
@@ -209,14 +159,11 @@ function togglePanel(panelId) {
   const content= panel.querySelector('.panel-content');
   const btn    = panel.querySelector('img.minimize-button');
   if (content.style.display === 'none') {
-    content.style.display = 'block';
-    btn.src = 'eye-open.png';
+    content.style.display = 'block'; btn.src = 'eye-open.png';
   } else {
-    content.style.display = 'none';
-    btn.src = 'eye-closed.png';
+    content.style.display = 'none';  btn.src = 'eye-closed.png';
   }
 }
-
 function showPanel(panelId) {
   const panel = document.getElementById(panelId);
   panel.querySelector('.panel-content').style.display = 'block';
@@ -224,34 +171,32 @@ function showPanel(panelId) {
 }
 
 // ───────────────────────────────────────────────
-// Add‐Object Functions
+// Add-Object Functions
 // ───────────────────────────────────────────────
 function createCube() {
   const cube = new THREE.Mesh(
     new THREE.BoxGeometry(),
-    new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+    new THREE.MeshPhysicalMaterial({ color:getRandomColor(), roughness:0.1})
   );
   scene.add(cube);
   cube.name = `#${objectCounter++} Cube`;
   addToOutliner(cube);
   selectObjectFromOutliner(cube);
 }
-
 function createSphere() {
   const sph = new THREE.Mesh(
     new THREE.SphereGeometry(1,32,32),
-    new THREE.MeshBasicMaterial({ color: getRandomColor() })
+    new THREE.MeshPhysicalMaterial({ color:getRandomColor(), roughness:0.1 })
   );
   scene.add(sph);
   sph.name = `#${objectCounter++} Sphere`;
   addToOutliner(sph);
   selectObjectFromOutliner(sph);
 }
-
 function createImage() {
   const input = document.createElement('input');
-  input.type    = 'file';
-  input.accept  = 'image/*';
+  input.type   = 'file';
+  input.accept = 'image/*';
   input.onchange = e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -259,9 +204,8 @@ function createImage() {
     reader.onload = e2 => {
       const img = new Image();
       img.onload = () => {
-        const tex = new THREE.Texture(img);
-        tex.needsUpdate = true;
         const ar = img.width/img.height, w=5, h=w/ar;
+        const tex = new THREE.Texture(img); tex.needsUpdate = true;
         const plane = new THREE.Mesh(
           new THREE.PlaneGeometry(w,h),
           new THREE.MeshBasicMaterial({ map:tex, transparent:true })
@@ -277,7 +221,6 @@ function createImage() {
   };
   input.click();
 }
-
 function showGLTFInput() {
   const input = document.createElement('input');
   input.type   = 'file';
@@ -287,7 +230,7 @@ function showGLTFInput() {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = e2 => {
-      new THREE.GLTFLoader().parse(e2.target.result, '', gltf => {
+      new THREE.GLTFLoader().parse(e2.target.result,'',gltf=>{
         const model = gltf.scene;
         scene.add(model);
         model.name = `#${objectCounter++} Model`;
@@ -312,175 +255,182 @@ function selectObjectFromOutliner(obj) {
   ['posX','posY','posZ'].forEach((id,i)=>
     document.getElementById(id).value = obj.position.getComponent(i).toFixed(3)
   );
-  ['rotX','rotY','rotZ'].forEach((id,i)=>
-    document.getElementById(id).value = THREE.MathUtils.radToDeg(obj.rotation.getComponent(i)).toFixed(3)
-  );
+ ['rotX','rotY','rotZ'].forEach((id,i) => {
+  const e = obj.rotation;
+  const angles = [ e.x, e.y, e.z ];
+  document.getElementById(id).value =
+    THREE.MathUtils.radToDeg( angles[i] ).toFixed(3);
+});
   ['scaleX','scaleY','scaleZ'].forEach((id,i)=>
     document.getElementById(id).value = obj.scale.getComponent(i).toFixed(3)
   );
-  document.getElementById('materialColor').value = rgbToHex(obj.material?.color || new THREE.Color(1,1,1));
+  document.getElementById('materialColor').value = rgbToHex(obj.material?.color||new THREE.Color(1,1,1));
 
   Array.from(document.getElementById('outlinerList').children)
-    .forEach(li => li.style.color = 'white');
+       .forEach(li=>li.style.color='white');
   const sel = Array.from(document.getElementById('outlinerList').children)
-    .find(li => li.textContent === obj.name);
-  if (sel) sel.style.color = 'yellow!important';
-}
+                   .find(li=>li.textContent===obj.name);
+  if(sel) sel.style.color='yellow';
 
+  // show joystick whenever an object is selected
+  showJoystick();
+}
 function addToOutliner(obj) {
   objectList.push(obj);
   const li = document.createElement('li');
   li.textContent = obj.name;
-  li.onclick = () => selectObjectFromOutliner(obj);
+  li.onclick = ()=> selectObjectFromOutliner(obj);
   document.getElementById('outlinerList').appendChild(li);
 }
 
 // ───────────────────────────────────────────────
-// Utility Updaters
+// Property Updaters & Utility
 // ───────────────────────────────────────────────
-function rgbToHex(color) {
-  const r = Math.round(color.r * 255),
-        g = Math.round(color.g * 255),
-        b = Math.round(color.b * 255);
+function rgbToHex(color){
+  const r=Math.round(color.r*255),
+        g=Math.round(color.g*255),
+        b=Math.round(color.b*255);
   return `#${((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1)}`;
 }
-
-function updateWorldColor(e) {
+function updateWorldColor(e){
   scene.background = new THREE.Color(e.target.value);
   ambientLight.color.set(e.target.value);
 }
-
-function updatePosition() {
-  if (!currentObject) return;
+function updatePosition(){
+  if(!currentObject)return;
   currentObject.position.set(
     +document.getElementById('posX').value,
     +document.getElementById('posY').value,
     +document.getElementById('posZ').value
   );
 }
-
-function updateName() {
-  if (!currentObject) return;
+function updateName(){
+  if(!currentObject)return;
   const nm = document.getElementById('objectName').value;
   Array.from(document.getElementById('outlinerList').children)
-    .forEach(li => {
-      if (li.textContent === currentObject.name) li.textContent = nm;
-    });
+       .forEach(li=>{ if(li.textContent===currentObject.name) li.textContent=nm; });
   currentObject.name = nm;
 }
-
-function updateRotation() {
-  if (!currentObject) return;
+function updateRotation(){
+  if(!currentObject)return;
   currentObject.rotation.set(
     THREE.MathUtils.degToRad(+document.getElementById('rotX').value),
     THREE.MathUtils.degToRad(+document.getElementById('rotY').value),
     THREE.MathUtils.degToRad(+document.getElementById('rotZ').value)
   );
 }
-
-function updateScale() {
-  if (!currentObject) return;
+function updateScale(){
+  if(!currentObject)return;
   currentObject.scale.set(
     +document.getElementById('scaleX').value,
     +document.getElementById('scaleY').value,
     +document.getElementById('scaleZ').value
   );
 }
-
-function updateMaterialColor() {
-  if (currentObject?.material) {
+function updateMaterialColor(){
+  if(currentObject?.material)
     currentObject.material.color.set(document.getElementById('materialColor').value);
-  }
 }
 
-// ───────────────────────────────────────────────
-// Panel Scroll Shrink/Expand
-// ───────────────────────────────────────────────
-function handlePanelScroll() {
-  
-  if (cp.scrollTop > 20) cp.classList.add('cBig');
-  else              cp.classList.remove('cBig');
-}
-// ───────────────────────────────────────────────
-// Wire up UI event listeners
-// ───────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  // Panel toggles
-  document.querySelectorAll('img.minimize-button').forEach(btn => {
-    btn.addEventListener('click', () => togglePanel(btn.dataset.panel));
-  });
-
-  // Add‐object buttons
-  document.getElementById('btn-add-cube').addEventListener('click', createCube);
-  document.getElementById('btn-add-sphere').addEventListener('click', createSphere);
-  document.getElementById('btn-add-gltf').addEventListener('click', showGLTFInput);
-
-  // Property inputs → update calls
-  ['posX','posY','posZ'].forEach(id =>
-    document.getElementById(id).addEventListener('change', updatePosition)
-  );
-  ['rotX','rotY','rotZ'].forEach(id =>
-    document.getElementById(id).addEventListener('change', updateRotation)
-  );
-  ['scaleX','scaleY','scaleZ'].forEach(id =>
-    document.getElementById(id).addEventListener('change', updateScale)
-  );
-  document.getElementById('objectName').addEventListener('change', updateName);
-  document.getElementById('materialColor').addEventListener('change', updateMaterialColor);
-  document.getElementById('worldColor').addEventListener('change', updateWorldColor);
-
-  // Scroll shrink/expand
+// handle panel scroll cBig
+function handlePanelScroll(){
   const cp = document.querySelector('.controls-panels');
-  if (cp) cp.addEventListener('scroll', handlePanelScroll);
+  if(cp.scrollTop>20) cp.classList.add('cBig');
+  else               cp.classList.remove('cBig');
+}
 
-  // Start everything
-  init();
+// wire up inputs & buttons
+window.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('img.minimize-button')
+    .forEach(btn=>btn.addEventListener('click',()=>togglePanel(btn.dataset.panel)));
+
+  document.getElementById('btn-add-cube').addEventListener('click',createCube);
+  document.getElementById('btn-add-sphere').addEventListener('click',createSphere);
+  document.getElementById('btn-add-gltf').addEventListener('click',showGLTFInput);
+  document.getElementById('btn-add-image').addEventListener('click',createImage);
+    ['scaleX','scaleY','scaleZ'].forEach(id => {
+  const inp = document.getElementById(id);
+  inp.step = "0.01";
 });
+  ['posX','posY','posZ'].forEach(id=>
+    document.getElementById(id).addEventListener('change',updatePosition));
+  ['rotX','rotY','rotZ'].forEach(id=>
+    document.getElementById(id).addEventListener('change',updateRotation));
+  ['scaleX','scaleY','scaleZ'].forEach(id=>
+    document.getElementById(id).addEventListener('change',updateScale));
+
+  document.getElementById('objectName').addEventListener('change',updateName);
+  document.getElementById('materialColor').addEventListener('change',updateMaterialColor);
+  document.getElementById('worldColor').addEventListener('change',updateWorldColor);
+  document.querySelector('.controls-panels').addEventListener('scroll',handlePanelScroll);
+});
+// ───────────────────────────────────────────────
+// Joystick UI Creation
+// ───────────────────────────────────────────────
+const joystickContainer = document.createElement('div');
+joystickContainer.id = 'joystick-container';
+Object.assign(joystickContainer.style,{
+  position: 'absolute', bottom:'20px', left:'20px',
+  width:'150px', height:'150px',
+  borderRadius:'50%', background:'rgba(0,0,0,0.3)',
+  display:'none', touchAction:'none'
+});
+document.body.appendChild(joystickContainer);
+
+const knob = document.createElement('div');
+knob.id = 'joystick-knob';
+Object.assign(knob.style,{
+  position:'absolute', width:'50px', height:'50px',
+  borderRadius:'50%', background:'rgba(255,255,255,0.6)',
+  left:'50%', top:'50%', transform:'translate(-50%,-50%)'
+});
+joystickContainer.appendChild(knob);
+
+let joyActive = false, joyPos = {x:0,y:0};
+
+knob.addEventListener('pointerdown', e=>{ joyActive = true; });
+document.addEventListener('pointerup', e=>{
+  joyActive = false; joyPos = {x:0,y:0};
+  knob.style.transform = 'translate(-50%,-50%)';
+});
+document.addEventListener('pointermove', e=>{
+  if(!joyActive) return;
+  const r = joystickContainer.getBoundingClientRect();
+  const cx = r.left + r.width/2, cy = r.top + r.height/2;
+  joyPos.x = (e.clientX - cx) / (r.width/2);
+  joyPos.y = (e.clientY - cy)  / (r.height/2);
+  const max = r.width/2 - 25;
+  const dx = Math.max(-max,Math.min(max, joyPos.x * max));
+  const dy = Math.max(-max,Math.min(max, joyPos.y * max));
+  knob.style.transform = `translate(${dx}px,${dy}px)`;
+});
+
+// show/hide helpers
+function showJoystick(){ joystickContainer.style.display='block'; }
+function hideJoystick(){ joystickContainer.style.display='none'; }
 
 // ───────────────────────────────────────────────
-// Handle window resize
+// Move the selected object every frame
 // ───────────────────────────────────────────────
-window.addEventListener('resize', () => {
-  const cv = document.getElementById('sceneViewer');
-  renderer.setSize(cv.clientWidth, cv.clientHeight);
-  camera.aspect = cv.clientWidth / cv.clientHeight;
-  camera.updateProjectionMatrix();
-});
+function updateJoystickMovement(){
+  if(currentObject){
+    const forward = new THREE.Vector3();
+    camera.getWorldDirection(forward);
+    forward.y = 0; forward.normalize();
 
-// Hook up your new "Add Image" button
-document.getElementById('btn-add-image').addEventListener('click', () => {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.onchange = event => {
-    const file = event.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        // compute plane size based on a fixed width
-        const width = 5;
-        const height = width * (img.height / img.width);
-        const texture = new THREE.Texture(img);
-        texture.needsUpdate = true;
+    const right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
+    const speed = 0.1;
+    const move = forward.clone().multiplyScalar(-joyPos.y*speed)
+                .add(right.clone().multiplyScalar( joyPos.x*speed));
+    currentObject.position.add(move);
+    const inpX = document.getElementById('posX');
+const inpY = document.getElementById('posY');
+const inpZ = document.getElementById('posZ');
+inpX.value = currentObject.position.x.toFixed(3);
+    inpY.value = currentObject.position.y.toFixed(3);
+    inpZ.value = currentObject.position.z.toFixed(3);
 
-        const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshBasicMaterial({
-          map: texture,
-          transparent: true
-        });
-        const plane = new THREE.Mesh(geometry, material);
-
-        scene.add(plane);
-        plane.name = `#${objectCounter++} Image`;
-        addToOutliner(plane);
-        selectObjectFromOutliner(plane);
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  };
-  input.click();
-});
-
+  }
+  requestAnimationFrame(updateJoystickMovement);
+}
+updateJoystickMovement();

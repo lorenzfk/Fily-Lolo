@@ -66,7 +66,7 @@ margin:10px;
 
 /* Controls and Panels Section */
 .controls-panels {
-  width: 80%; /* Same as viewport */
+  width: calc(100vw - 50px); /* Same as viewport */
   margin-top: 10%;
   padding-bottom: 10%;
   z-index:99;
@@ -188,8 +188,6 @@ body, body * {
   font-weight: normal !important;
   letter-spacing: .4px;
 }
-h3{
-}
 /* Only apply vertical scaling to text elements */
 p, h1, h2, h3, h4, h5, h6,
 span, a, li, label, button, input, textarea {
@@ -209,11 +207,34 @@ span, a, li, label, button, img{
 }
 
 #joystick-container {
+  position: fixed;
+  background-color: white;
+  right: 20px;
+  width: 150px;
+  height: 150px;
+  touch-action: none;     
+  z-index: 999;         /* on top of everything */
+}
+#joy-zone {
   position: absolute;
   bottom: 20px;
   left: 20px;
-  width: 150px;
-  height: 150px;
-  touch-action: none;       /* prevent page scroll while dragging */
-  z-index: 1000;             /* on top of everything */
+  width: 120px;  height: 120px;
+  display: none; /* show on select */
+  touch-action: none;
+  z-index: 1000;
+}
+#joy-base {
+  width:100%; height:100%;
+  background: rgba(255,255,255,0.2);
+  border-radius:50%;
+  position:relative;
+}
+#joy-knob {
+  width:50px; height:50px;
+  background: rgba(255,255,255,0.6);
+  border-radius:50%;
+  position:absolute;
+  top:35px; left:35px; /* center */
+  touch-action: none;
 }
