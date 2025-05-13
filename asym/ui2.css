@@ -243,8 +243,19 @@ span, a, li, label, button, img{
 .controls-panels img{
   transition:.2s;
 }
+.controls-panels img:hover, li:hover{
+  opacity:0.9;
+  filter: brightness(10%);
+}
 .controls-panels img:hover{
   transform:scale(1.2)!important;
+
+  
+}
+li::before{
+    content: '●';
+    padding-right:10px;
+    transform: none;
 }
 .controls-panel{
     

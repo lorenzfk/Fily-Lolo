@@ -302,13 +302,13 @@ function selectObjectFromOutliner(object) {
 
   Array.from(listItems).forEach(item => {
     // Reset all items to white
-    item.style.color = 'white';
+    item.style.textDecoration = 'none';
   });
 
   // Find the selected item in the list and highlight it in red
-  const selectedItem = Array.from(listItems).find(item => item.textContent === object.name);
+  const selectedItem = Array.from(listItems).find(item => (item.textContent- "") === object.name);
   if (selectedItem) {
-    selectedItem.style.color = 'red'; // Set selected item to red
+    item.style.background = 'blue!important'; // Set selected item to red
   }
 }
 

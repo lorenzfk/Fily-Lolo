@@ -4,8 +4,19 @@
 let scene, camera, renderer, ambientLight, directionalLight;
 let waterMesh, normalMap1, normalMap2;
 let currentObject = null, objectList = [], objectCounter = 1;
+const joystickEl = document.getElementById('joystickContainer'); // your on-screen joystick wrapper
+
 const scrollSpeed1 = new THREE.Vector2(0.001, 0.0005);
 const scrollSpeed2 = new THREE.Vector2(-0.0007, -0.0003);
+// ─── Globals ────────────────────────────────────
+let axisModel;       // will hold the loaded GLTF scene
+const axisLoader = new THREE.GLTFLoader();
+axisLoader.load('axis.glb', gltf => {
+  axisModel = gltf.scene;
+  axisModel.visible = false;
+  axisModel.scale.set(2.5,2.5,2.5);     // hide until needed
+  scene.add(axisModel);
+});
 
 // random hex color
 function getRandomColor() {
@@ -74,6 +85,10 @@ function createWaterSurface() {
   waterMesh.position.y = -2;
   scene.add(waterMesh);
 
+    waterMesh.name = 'ocean';
+  addToOutliner(waterMesh);
+
+
   const cubeCam = new THREE.CubeCamera(0.1,1000,cubeRT);
   cubeCam.position.copy(waterMesh.position);
   scene.add(cubeCam);
@@ -127,7 +142,7 @@ function init() {
 // remove “cBig” and hide joystick when you click the canvas
 document.getElementById('sceneViewer').addEventListener('click', ()=>{
   document.querySelector('.controls-panels').classList.remove('cBig');
-  hideJoystick();
+  //hideJoystick();
 });
 
 function animate() {
@@ -144,6 +159,15 @@ function animate() {
     cc.position.copy(waterMesh.position);
     cc.update(renderer, scene);
     waterMesh.visible = true;
+  }
+
+  if (axisModel && currentObject) {
+    const joystickEl = document.getElementById('joystick-container');
+    const isJoystickVisible = joystickEl && window.getComputedStyle(joystickEl).display !== 'none';
+    axisModel.visible = isJoystickVisible;
+    if (isJoystickVisible) {
+      axisModel.position.copy(currentObject.position);
+    }
   }
   
   renderer.render(scene, camera);
@@ -267,21 +291,56 @@ function selectObjectFromOutliner(obj) {
   document.getElementById('materialColor').value = rgbToHex(obj.material?.color||new THREE.Color(1,1,1));
 
   Array.from(document.getElementById('outlinerList').children)
-       .forEach(li=>li.style.color='white');
+       .forEach(li=>li.style.textDecoration='none');
   const sel = Array.from(document.getElementById('outlinerList').children)
                    .find(li=>li.textContent===obj.name);
-  if(sel) sel.style.color='yellow';
+  if(sel) sel.style.textDecoration='underline';
 
   // show joystick whenever an object is selected
   showJoystick();
 }
-function addToOutliner(obj) {
-  objectList.push(obj);
+// Replace your existing addToOutliner with this:
+function addToOutliner(object) {
+  objectList.push(object);
+
   const li = document.createElement('li');
-  li.textContent = obj.name;
-  li.onclick = ()=> selectObjectFromOutliner(obj);
+  li.textContent = object.name;
+  li.style.display = 'flex';
+  li.style.justifyContent = 'space-between';
+  li.style.alignItems = 'center';
+
+  // clicking the text still selects
+  li.onclick = () => selectObjectFromOutliner(object);
+
+  // create delete button
+  const del = document.createElement('img');
+  del.src = 'delete.png';
+  del.alt = 'Delete';
+  del.style.cursor = 'pointer';
+  del.style.width = del.style.height = '16px';
+  del.style.marginLeft = '8px';
+
+  del.addEventListener('click', e => {
+    e.stopPropagation();
+    // remove from scene
+    scene.remove(object);
+    // remove from objectList
+    objectList = objectList.filter(o => o !== object);
+    // remove this <li>
+    li.remove();
+    // clear properties panel if that was selected
+    if (currentObject === object) {
+      currentObject = null;
+      document.getElementById('propertiesPanel').classList.add('smol');
+      // ...and clear inputs if you like
+    }
+  });
+
+  li.appendChild(del);
   document.getElementById('outlinerList').appendChild(li);
 }
+
+
 
 // ───────────────────────────────────────────────
 // Property Updaters & Utility
@@ -370,7 +429,7 @@ window.addEventListener('DOMContentLoaded',()=>{
 const joystickContainer = document.createElement('div');
 joystickContainer.id = 'joystick-container';
 Object.assign(joystickContainer.style,{
-  position: 'absolute', bottom:'20px', left:'20px',
+  position: 'absolute', bottom:'20px', right:'20px',
   width:'150px', height:'150px',
   borderRadius:'50%', background:'rgba(0,0,0,0.3)',
   display:'none', touchAction:'none'
@@ -405,9 +464,14 @@ document.addEventListener('pointermove', e=>{
   knob.style.transform = `translate(${dx}px,${dy}px)`;
 });
 
+
+
 // show/hide helpers
-function showJoystick(){ joystickContainer.style.display='block'; }
-function hideJoystick(){ joystickContainer.style.display='none'; }
+function showJoystick(){ joystickContainer.style.display = 'block'; if (axisModel) axisModel.visible = true;}
+function hideJoystick() {
+  joystickContainer.style.display = 'none';
+  if (axisModel) axisModel.visible = false;
+}
 
 // ───────────────────────────────────────────────
 // Move the selected object every frame
