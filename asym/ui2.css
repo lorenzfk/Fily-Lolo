@@ -235,7 +235,6 @@ span, a, li, label, button, input, textarea {
   transform: scaleY(1.2) scaleX(0.8);
   transform-origin: center;      /* keep flow from the top edge */
   color: rgba(0,0,0,0.5) !important; 
-  filter:blur(0.4px);
 }
 p, h1, h2, h3, h4, h5, h6,
 span, a, li, label, button, img{
@@ -246,6 +245,10 @@ span, a, li, label, button, img{
 }
 .controls-panels img:hover{
   transform:scale(1.2)!important;
+}
+.controls-panel{
+    
+  filter:blur(0.4px);
 }
 
 #joystick-container {
@@ -282,6 +285,6 @@ span, a, li, label, button, img{
 }
 
 .panel img{
-    opacity: 0.7;
+    opacity: 0.6;
     image-rendering: -webkit-smooth;/* WebKit (Safari/Chrome) */
 }
