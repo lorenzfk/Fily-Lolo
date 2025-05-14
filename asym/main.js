@@ -4,6 +4,11 @@
 let scene, camera, renderer, ambientLight, directionalLight;
 let waterMesh, normalMap1, normalMap2;
 let currentObject = null, objectList = [], objectCounter = 1;
+// ─── New Globals ─────────────────────────────────────────
+let yAxisModel;               // the Y-axis helper
+let movementMode = 'xz';      // toggle between 'xz' and 'y'
+// ─────────────────────────────────────────────────────────
+
 const joystickEl = document.getElementById('joystickContainer'); // your on-screen joystick wrapper
 
 const scrollSpeed1 = new THREE.Vector2(0.001, 0.0005);
@@ -17,6 +22,15 @@ axisLoader.load('axis.glb', gltf => {
   axisModel.scale.set(2.5,2.5,2.5);     // hide until needed
   scene.add(axisModel);
 });
+// ─── Load Y-axis helper ─────────────────────────────────
+
+new THREE.GLTFLoader().load('yaxis.glb', gltf => {
+  yAxisModel = gltf.scene;
+  yAxisModel.visible = false;  
+  yAxisModel.scale.set(2.5,2.5,2.5);    // start hidden
+  scene.add(yAxisModel);
+});
+// ─────────────────────────────────────────────────────────
 
 // random hex color
 function getRandomColor() {
@@ -161,13 +175,10 @@ function animate() {
     waterMesh.visible = true;
   }
 
-  if (axisModel && currentObject) {
+  if (axisModel && currentObject && yAxisModel) {
     const joystickEl = document.getElementById('joystick-container');
     const isJoystickVisible = joystickEl && window.getComputedStyle(joystickEl).display !== 'none';
     axisModel.visible = isJoystickVisible;
-    if (isJoystickVisible) {
-      axisModel.position.copy(currentObject.position);
-    }
   }
   
   renderer.render(scene, camera);
@@ -299,6 +310,9 @@ function selectObjectFromOutliner(obj) {
   // show joystick whenever an object is selected
   showJoystick();
 }
+
+// ─────────────────────────────────────────────────────────
+
 // Replace your existing addToOutliner with this:
 function addToOutliner(object) {
   objectList.push(object);
@@ -422,6 +436,12 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('materialColor').addEventListener('change',updateMaterialColor);
   document.getElementById('worldColor').addEventListener('change',updateWorldColor);
   document.querySelector('.controls-panels').addEventListener('scroll',handlePanelScroll);
+  document.querySelector('#joystick-container').addEventListener('click', () => {
+  movementMode = (movementMode === 'xz') ? 'y' : 'xz';
+  // show/hide the correct axis helper
+  if (axisModel)  axisModel.visible  = (movementMode === 'xz');
+  if (yAxisModel) yAxisModel.visible = (movementMode === 'y');
+});
 });
 // ───────────────────────────────────────────────
 // Joystick UI Creation
@@ -429,7 +449,7 @@ window.addEventListener('DOMContentLoaded',()=>{
 const joystickContainer = document.createElement('div');
 joystickContainer.id = 'joystick-container';
 Object.assign(joystickContainer.style,{
-  position: 'absolute', bottom:'20px', right:'20px',
+  position: 'absolute', bottom:'30%', right:'10px',
   width:'150px', height:'150px',
   borderRadius:'50%', background:'rgba(0,0,0,0.3)',
   display:'none', touchAction:'none'
@@ -467,7 +487,7 @@ document.addEventListener('pointermove', e=>{
 
 
 // show/hide helpers
-function showJoystick(){ joystickContainer.style.display = 'block'; if (axisModel) axisModel.visible = true;}
+function showJoystick(){ joystickContainer.style.display = 'block'; }
 function hideJoystick() {
   joystickContainer.style.display = 'none';
   if (axisModel) axisModel.visible = false;
@@ -478,23 +498,41 @@ function hideJoystick() {
 // ───────────────────────────────────────────────
 function updateJoystickMovement(){
   if(currentObject){
-    const forward = new THREE.Vector3();
-    camera.getWorldDirection(forward);
-    forward.y = 0; forward.normalize();
-
-    const right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
     const speed = 0.1;
-    const move = forward.clone().multiplyScalar(-joyPos.y*speed)
-                .add(right.clone().multiplyScalar( joyPos.x*speed));
-    currentObject.position.add(move);
-    const inpX = document.getElementById('posX');
-const inpY = document.getElementById('posY');
-const inpZ = document.getElementById('posZ');
-inpX.value = currentObject.position.x.toFixed(3);
-    inpY.value = currentObject.position.y.toFixed(3);
-    inpZ.value = currentObject.position.z.toFixed(3);
+    axisModel.position.copy(currentObject.position);
+    yAxisModel.position.copy(currentObject.position);
+    if (movementMode === 'xz') {
+      // XZ‐plane movement
+      const forward = new THREE.Vector3();
+      camera.getWorldDirection(forward);
+      forward.y = 0;
+      forward.normalize();
+        
+      const right = new THREE.Vector3().crossVectors(forward, camera.up).normalize();
 
+      const move = forward.clone().multiplyScalar(-joyPos.y * speed)
+                  .add(right.clone().multiplyScalar( joyPos.x * speed));
+
+      currentObject.position.add(move);
+      
+        axisModel.visible=true;
+        yAxisModel.visible=false;
+
+
+    } else {
+          axisModel.visible=false;
+        yAxisModel.visible=true;
+      // Y‐axis only movement
+      currentObject.position.y += joyPos.y * speed;
+    }
+
+    // Update the input fields every frame
+    document.getElementById('posX').value = currentObject.position.x.toFixed(3);
+    document.getElementById('posY').value = currentObject.position.y.toFixed(3);
+    document.getElementById('posZ').value = currentObject.position.z.toFixed(3);
   }
+
   requestAnimationFrame(updateJoystickMovement);
 }
+
 updateJoystickMovement();
