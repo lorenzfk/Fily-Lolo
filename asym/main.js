@@ -18,6 +18,7 @@ let axisModel;       // will hold the loaded GLTF scene
 const axisLoader = new THREE.GLTFLoader();
 axisLoader.load('axis.glb', gltf => {
   axisModel = gltf.scene;
+  
   axisModel.visible = false;
   axisModel.scale.set(2.5,2.5,2.5);     // hide until needed
   scene.add(axisModel);
@@ -26,10 +27,12 @@ axisLoader.load('axis.glb', gltf => {
 
 new THREE.GLTFLoader().load('yaxis.glb', gltf => {
   yAxisModel = gltf.scene;
+  
   yAxisModel.visible = false;  
   yAxisModel.scale.set(2.5,2.5,2.5);    // start hidden
   scene.add(yAxisModel);
 });
+
 // ─────────────────────────────────────────────────────────
 
 // random hex color
@@ -116,7 +119,7 @@ function init() {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
   camera.position.z = 10;
-
+    
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio); 
   const cv = document.getElementById('sceneViewer');
@@ -441,6 +444,19 @@ window.addEventListener('DOMContentLoaded',()=>{
   // show/hide the correct axis helper
   if (axisModel)  axisModel.visible  = (movementMode === 'xz');
   if (yAxisModel) yAxisModel.visible = (movementMode === 'y');
+ [ axisMesh, yAxisMesh ].forEach(obj => {
+  obj.traverse(child => {
+    if (child.isMesh) {
+      // ensure transparency so we can disable depth write
+      child.material.transparent = true;
+      // draw after everything else
+      child.renderOrder = 9999;
+      // don’t let the depth buffer hide it
+      child.material.depthTest = false;
+      child.material.depthWrite = false;
+    }
+  });
+});
 });
 });
 // ───────────────────────────────────────────────
@@ -523,7 +539,7 @@ function updateJoystickMovement(){
           axisModel.visible=false;
         yAxisModel.visible=true;
       // Y‐axis only movement
-      currentObject.position.y += joyPos.y * speed;
+      currentObject.position.y -= joyPos.y * speed;
     }
 
     // Update the input fields every frame
