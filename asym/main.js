@@ -2,7 +2,7 @@
 // Globals & Helpers
 // ───────────────────────────────────────────────
 let scene, camera, renderer, ambientLight, directionalLight;
-let waterMesh, normalMap1, normalMap2;
+let waterMesh, normalMap1, normalMap2, mixMap;
 let currentObject = null, objectList = [], objectCounter = 1;
 // ─── New Globals ─────────────────────────────────────────
 let yAxisModel;               // the Y-axis helper
@@ -11,8 +11,8 @@ let movementMode = 'xz';      // toggle between 'xz' and 'y'
 
 const joystickEl = document.getElementById('joystickContainer'); // your on-screen joystick wrapper
 
-const scrollSpeed1 = new THREE.Vector2(0.001, 0.0005);
-const scrollSpeed2 = new THREE.Vector2(-0.0007, -0.0003);
+const scrollSpeed1 = new THREE.Vector2(-0.0004, 0.00003);
+const scrollSpeed2 = new THREE.Vector2(-0.0001, -0.0001);
 // ─── Globals ────────────────────────────────────
 let axisModel;       // will hold the loaded GLTF scene
 const axisLoader = new THREE.GLTFLoader();
@@ -71,11 +71,11 @@ function g_texture() {
 // ───────────────────────────────────────────────
 function createWaterSurface() {
   const loader = new THREE.TextureLoader();
-  normalMap1 = loader.load('https://threejs.org/examples/textures/waternormals.jpg');
-  normalMap2 = loader.load('https://threejs.org/examples/textures/waternormals.jpg');
+  normalMap1 = loader.load('water.jpeg');
+  normalMap2 = loader.load('waterbump.png');
   [normalMap1,normalMap2].forEach(t=>{
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
-    t.repeat.set(40,40);
+    t.repeat.set(80,80);
   });
 
   const cubeRT = new THREE.WebGLCubeRenderTarget(256, {
@@ -88,14 +88,41 @@ function createWaterSurface() {
   const mat = new THREE.MeshPhysicalMaterial({
     color:       0xffffff,
     metalness:   1.0,
-    roughness:   0.1,
+    roughness:  normalMap2,
+    dither:'true',
+    bumpMap: normalMap2,
+    bumpScale: 10.0,
     envMap:      g_texture(),
     envMapIntensity: 0.9,
     normalMap:   normalMap1,
-    bumpMap:     normalMap2,
-    bumpScale:   0.5
   });
+  
 
+// and still assign the first map & bump map normally:
+
+
+mat.onBeforeCompile = shader => {
+  // 1) inject both uniforms at the top of the fragment shader
+  shader.fragmentShader =
+    'uniform sampler2D normalMap2;\n' +
+    'uniform mat3 normalMatrix;\n' +
+    shader.fragmentShader;
+
+  // 2) bind your JS texture to that uniform
+  shader.uniforms.normalMap2 = { value: normalMap2 };
+
+  // 3) replace the default normal block
+  shader.fragmentShader = shader.fragmentShader.replace(
+    '#include <normal_fragment_maps>',
+    `
+    // --- dual normal blend ---
+    vec3 n1 = texture2D( normalMap,   vUv ).xyz * 2.0 - 1.0;
+    vec3 n2 = texture2D( normalMap2, vUv ).xyz * 2.0 - 1.0;
+    vec3 blended = normalize( n1 + n2 );
+    normal = normalize( normalMatrix * blended );
+    `
+  );
+};
   const geo = new THREE.PlaneGeometry(400,400);
   waterMesh = new THREE.Mesh(geo, mat);
   waterMesh.rotation.x = -Math.PI/2 + 0.05;
@@ -134,7 +161,7 @@ function init() {
   cv.appendChild(renderer.domElement);
 
   scene.background = new THREE.Color('#008080');
-  ambientLight   = new THREE.AmbientLight('#008080F', 0.5);
+  ambientLight   = new THREE.AmbientLight('#008080', 0.5);
   directionalLight = new THREE.DirectionalLight(0xffffff,1);
   directionalLight.position.set(10,10,10).normalize();
   scene.add(ambientLight, directionalLight);
@@ -246,7 +273,7 @@ function createImage() {
         const tex = new THREE.Texture(img); tex.needsUpdate = true;
         const plane = new THREE.Mesh(
           new THREE.PlaneGeometry(w,h),
-          new THREE.MeshBasicMaterial({ map:tex, transparent:true })
+          new THREE.MeshBasicMaterial({ map:tex, transparent:true, alpha })
         );
         scene.add(plane);
         plane.name = `#${objectCounter++} Image`;
@@ -444,19 +471,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   // show/hide the correct axis helper
   if (axisModel)  axisModel.visible  = (movementMode === 'xz');
   if (yAxisModel) yAxisModel.visible = (movementMode === 'y');
- [ axisMesh, yAxisMesh ].forEach(obj => {
-  obj.traverse(child => {
-    if (child.isMesh) {
-      // ensure transparency so we can disable depth write
-      child.material.transparent = true;
-      // draw after everything else
-      child.renderOrder = 9999;
-      // don’t let the depth buffer hide it
-      child.material.depthTest = false;
-      child.material.depthWrite = false;
-    }
-  });
-});
+
 });
 });
 // ───────────────────────────────────────────────

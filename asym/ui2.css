@@ -9,10 +9,10 @@
   padding: 0;
   box-sizing: border-box;
 }
+.cBig .panel{
+}
 .cBig{
-    backdrop-filter:blur(4px);
-
-    background: RGBA(255,255,255,.1);
+   
     overflow-x: visible;
     border-top-width: 120%;
     border-top:  var(--frame-blue) 5px solid;
@@ -135,7 +135,7 @@ margin:10px;
   width: 90%; /* Full width */
   bbackground-color: white; /* Black background */
  bbackground: #ffffff;
-background: linear-gradient(180deg, rgba(255, 255, 255, .4) 40%, rgba(184, 184, 184, .4) 100%);
+background: linear-gradient(180deg, rgba(255, 255, 255, 1) 40%, rgba(184, 184, 184, 1) 100%);
   color: black; /* White text */
   backdrop-filter:none;
   padding: 10px;
@@ -144,6 +144,7 @@ background: linear-gradient(180deg, rgba(255, 255, 255, .4) 40%, rgba(184, 184, 
   margin-top: 10px;
   border-radius: 12px;
   z-index: 2; /* Ensure panels fare above the viewport */
+  transition: .3s;
 }
 .panel-top{
   width: 100%;
@@ -222,7 +223,7 @@ input{
 }
 .highlight{
     overflow: hidden;
-    filter: drop-shadow(5px 5px 4px var(--frame-blue))!important;
+    filter: drop-shadow(2px 4px 1px var(--frame-blue))!important;
     max-width: 50px;
     animation: highlightme 1.0s infinite;
 }
