@@ -479,7 +479,9 @@ window.addEventListener('DOMContentLoaded',()=>{
 // ───────────────────────────────────────────────
 const joystickContainer = document.createElement('div');
 joystickContainer.id = 'joystick-container';
+joystickContainer.setAttribute('data-explanation','Use this to Move objects. Click for Up/Down!');
 Object.assign(joystickContainer.style,{
+    userSelect:'none',
   position: 'absolute', bottom:'30%', right:'10px',
   width:'150px', height:'150px',
   borderRadius:'50%', background:'rgba(0,0,0,0.3)',
@@ -490,6 +492,7 @@ document.body.appendChild(joystickContainer);
 const knob = document.createElement('div');
 knob.id = 'joystick-knob';
 Object.assign(knob.style,{
+    userSelect:'none',
   position:'absolute', width:'50px', height:'50px',
   borderRadius:'50%', background:'rgba(255,255,255,0.6)',
   left:'50%', top:'50%', transform:'translate(-50%,-50%)'
