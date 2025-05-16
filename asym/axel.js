@@ -1,7 +1,9 @@
-// Axel Virtual Assistant v2.2
-let shadowOffsetFactor = [-90,-80];
-let t =0;
+// Axel Virtual Assistant v2.4 with custom styling & one-time pointing
+let shadowOffsetFactor = [-90, -80];
+let t = 0;
+let aP =0;
 document.addEventListener('DOMContentLoaded', () => {
+    
   // --- 1. Create Axel container ---
   const axelContainer = document.createElement('div');
   Object.assign(axelContainer.style, {
@@ -23,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     width: '100%',
     userSelect: 'none',
     display: 'block',
-    pointerEvents:'none',
+    pointerEvents: 'none',
     filter: 'dropShadow(30px 10px 3px RGBA(0,0,0,0.7))',
     zIndex: '6',
     transformOrigin: '40% 50%',
@@ -36,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
   Object.assign(bubble.style, {
     position: 'fixed',
     userSelect: 'none',
-    pointerEvents:'none',
-    backdropFilter: 'blur(5px)',
+    pointerEvents: 'none',
+    backdropFilter: 'blur(1px)',
     zIndex: '6',
     margin: 'auto',
     borderTop: '2px solid white',
@@ -47,29 +49,32 @@ document.addEventListener('DOMContentLoaded', () => {
     padding: '18px 18px 18px 18px',
     background: 'RGBA(255,255,255,0.4)',
     borderRadius: '8px',
-    transform: 'scaleX(1) scaleY(1)',
+    transform: 'scaleX(1) scaleY(1) translateX(-50%)',
     boxShadow: '10px 25px 3px rgba(0,0,0,0.3)',
     fontFamily: 'sans-serif',
     fontSize: '14px',
     display: 'none',
-    width:'auto',
-    maxHeight: '300px',
+    maxWidth: '300px',
     textAlign: 'left'
   });
   axelContainer.appendChild(bubble);
 
   function say(text, duration = 2500) {
+    aP=aP+1;
     bubble.textContent = text;
-    bubble.innerHTML= bubble.textContent+'<button id="dismissAxel" style="color:yellow">Dismiss Axel</button>';
+    bubble.innerHTML = bubble.textContent +
+      '<button id="dismissAxel" style="color:yellow">Dismiss Axel</button>';
     bubble.style.display = 'flex';
     clearTimeout(bubble._timeout);
     bubble._timeout = setTimeout(() => {
       bubble.style.display = 'none';
+      
     }, duration);
   }
 
   // --- 4. Pointing logic ---
   let currentTarget = null;
+
   function pointTo(el) {
     if (!el) return;
     currentTarget = el;
@@ -97,53 +102,74 @@ document.addEventListener('DOMContentLoaded', () => {
     const cy = y + spriteRect.height / 2;
     const angle = 90 + Math.atan2(ty - cy, tx - cx) * 180 / Math.PI;
     sprite.style.transform = `rotate(${angle}deg)`;
-    sprite.style.zIndex='333';
-    sprite.style.overflow='hidden';
-    bubble.style.zIndex='-1';
-    bubble.style.top  = (y+80) + 'px';
-    bubble.style.left  = ((x/2)+( window.getBoundingClientRect.width/2))+ 'px';
-    const shadowOffset = [(((angle / 360))-0.5)*shadowOffsetFactor[0],(((angle / 360))+-.5)*shadowOffsetFactor[1]];
+    sprite.style.zIndex = '333';
+    sprite.style.overflow = 'hidden';
+
+    // position bubble according to your custom logic
+    bubble.style.zIndex = '-1';
+    bubble.style.top  = (y + 80) + 'px';
+    bubble.style.left = '50%';//((x / 10) + (window.getBoundingClientRect.width / 2)) + 'px';
+
+    // dynamic drop-shadow based on angle
+    const shadowOffset = [
+      (((angle / 360)) - 0.5) * shadowOffsetFactor[0],
+      (((angle / 360)) - 0.5) * shadowOffsetFactor[1]
+    ];
     sprite.style.filter = `drop-shadow(${shadowOffset[0]}px ${shadowOffset[1]}px 1px rgba(0,0,0,0.7))!important`;
   }
+  
 
-  // --- 5. Only pick elements with data-explanation ---
-  function getRandomElement() {
+  // --- 5. Track which elements have been pointed at ---
+  const pointed = new Set();
+
+  function getNextElement() {
     const all = Array.from(document.body.querySelectorAll('[data-explanation]')).filter(el => {
       const s = getComputedStyle(el);
       return el.offsetWidth > 0 &&
              el.offsetHeight > 0 &&
              s.visibility !== 'hidden';
     });
-    return all.length ? all[Math.floor(Math.random() * all.length)] : null;
+    const avail = all.filter(el => !pointed.has(el));
+    if (!avail.length) return null;
+    const el = avail[Math.floor(Math.random() * avail.length)];
+    pointed.add(el);
+    return el;
   }
 
-  // --- 6. Use data-explanation for speech ---
+  // --- 6. Read explanation ---
   function explain(el) {
     return el.getAttribute('data-explanation');
   }
 
   // --- 7. Continuous follow loop ---
-  function followLoop() {
-    if (currentTarget) {
-      pointTo(currentTarget);
-    }
+  (function followLoop() {
+    if (currentTarget) pointTo(currentTarget);
     requestAnimationFrame(followLoop);
-  }
-  followLoop();
-
-  // --- 8. 4-second cycle with highlight toggle ---
+  })();
+  // --- 8. 4-second cycle with highlight & one-time picks ---
+  
   setInterval(() => {
-    const el = getRandomElement();
+    const el = getNextElement();
     if (!el) return;
-    // highlight current
     document.querySelectorAll('[data-explanation]').forEach(e =>
       e.classList.toggle('highlight', e === el)
     );
-    say(explain(el));
-    pointTo(el);
+    console.log(aP);
+    if (aP <1){
+        say(explain(document.getElementById('logo')));
+        pointTo(document.getElementById('logo'));
+    }
+    
+    else {
+        say(explain(el));
+        pointTo(el);
+    }
+    
   }, 4000);
 });
+
+// update animation variable
 setInterval(() => {
-    t+=0.1;
-    //shadowOffsetFactor[0] = (Math.sin(t)+1)*20;
-     }, 100);
+  t += 0.1;
+  
+}, 100);

@@ -9,7 +9,7 @@
 
 <body>
   
-  <img src="asymlogo.png" alt="logo" data-explanation="Welcome to asym.space!" style="filter: saturate(100%) contrast(100%) brightness(115%) hue-rotate(-30deg) drop-shadow(0px 0px 6px RGBA(0,0,0,0.5));z-index:998;width:50px;position: fixed; top:10px;left:50%;transform: translateX(-50%) scale(.7);overflow: hidden;"><span style="transform: translateY(310%) scale(0.5,1.0);">asym.space</span></img>
+  <img src="asymlogo.png" id="logo" alt="logo" data-explanation="Welcome to asym.space!" style="filter: saturate(100%) contrast(100%) brightness(115%) hue-rotate(-30deg) drop-shadow(0px 0px 6px RGBA(0,0,0,0.5));z-index:998;width:50px;position: fixed; top:10px;left:50%;transform: translateX(-50%) scale(.7);overflow: hidden;"><span style="transform: translateY(310%) scale(0.5,1.0);">asym.space</span></img>
   <div class="container">
     <div class="viewport-container" data-explanation="Here is where you see your space. Use your fingers to move around!">
       <div id="sceneViewer"></div>
@@ -52,7 +52,7 @@
         </div>
       </div>
       <!-- Properties Panel -->
-      <div class="panel smol" id="propertiesPanel" data-explanation="This panel allows you to set properties like size, placement and rotation of objects!">
+      <div class="panel smol" id="propertiesPanel" >
         <div class="panel-top">
           <h3>object properties</h3>
           <img src="eye-closed.png"
@@ -60,7 +60,7 @@
                data-panel="propertiesPanel"
                alt="Show/Hide Properties">
         </div>
-        <div class="panel-content">
+        <div class="panel-content" data-explanation="This panel allows you to set properties like size, placement and rotation of objects!">
           <div id="objectProperties">
             <div class="input-group">
               <label for="objectName">name:</label>
@@ -94,7 +94,7 @@
       </div>
 
       <!-- World Panel -->
-      <div class="panel smol" id="worldPanel" data-explanation="To change the apearence of your space click here!">
+      <div class="panel smol" id="worldPanel" >
         <div class="panel-top">
           <h3>world</h3>
           <img src="eye-closed.png"
@@ -102,7 +102,7 @@
                data-panel="worldPanel"
                alt="Show/Hide Properties">
         </div>
-        <div class="panel-content">
+        <div class="panel-content" data-explanation="To change the apearence of your space click here!">
           <label>background color:</label>
           <input type="color" id="worldColor" value="#0000FF">
         </div>
