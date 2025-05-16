@@ -9,6 +9,13 @@
   padding: 0;
   box-sizing: border-box;
 }
+.axelSprite{
+
+    filter:drop-shadow(2px 10px 3px RGBA(0,0,0,0.7));
+}
+.axelContainer img , .axelContainer div{
+    filter:drop-shadow(2px 10px 3px RGBA(0,0,0,0.7));
+}
 .cBig .panel{
 }
 .cBig{
@@ -214,8 +221,8 @@ input{
 }
 
 @keyframes highlightme {
-    0%{scale: 1.0;}
-    40%{scale: 1.2;}
+    0%{ outline: 2px solid var(--frame-blue);}
+    40%{outline: 5px solid var(--frame-blue);}}
 }
 
 .highlight::after{
@@ -223,8 +230,6 @@ input{
 }
 .highlight{
     overflow: hidden;
-    filter: drop-shadow(2px 4px 1px var(--frame-blue))!important;
-    max-width: 50px;
     animation: highlightme 1.0s infinite;
 }
 

@@ -6,12 +6,12 @@
   <title>ASM Editor</title>
   <link rel="stylesheet" href="ui2.css">
 </head>
-<img src="axel-jump.gif" alt="logo" style="z-index:998;width:100px;position: fixed; bottom:10px;left:0%;overflow: hidden; z-index: 99999;"></img>
+<img src="axel-jump.gif" alt="logo" data-explanation="Welcome to asym.space!"  style="display:none;width:100px;position: fixed; bottom:10px;left:0%;overflow: hidden; z-index: 99999;"></img>
 <body>
   
   <img src="asymlogo.png" alt="logo" style="filter:saturate(0) contrast(180%) brightness(95%) drop-shadow(0px 0px 6px RGBA(0,0,0,0.5));z-index:998;width:50px;position: fixed; top:10px;left:50%;transform: translateX(-50%) scale(.7);overflow: hidden;"><span style="transform: translateY(310%) scale(0.5,1.0);">asym.space</span></img>
   <div class="container">
-    <div class="viewport-container">
+    <div class="viewport-container" data-explanation="Here is where you see your space. Use your fingers to move around!">
       <div id="sceneViewer"></div>
     </div>
 
@@ -23,7 +23,7 @@
       
 
       <!-- Controls Panel -->
-      <div class="panel" id="controlsPanel">
+      <div class="panel" id="controlsPanel"  data-explanation="This is where you can add objects to your space!" >
         <div class="panel-top">
           <h3>add object</h3>
           <img src="eye-open.png"
@@ -32,10 +32,10 @@
                alt="Show/Hide Properties">
         </div>
         <div class="panel-content" style="justify-content:space-beween;">
-          <img src="add-cube.png"   id="btn-add-cube"   alt="Add Cube">
-          <img src="add-sphere.png" id="btn-add-sphere" alt="Add Sphere">
-          <img src="add-mesh.png" class="highlight"  id="btn-add-gltf"   alt="Add 3D Model">
-          <img src="add-image.png"   id="btn-add-image"   alt="Add Image As Plane">
+          <img src="add-cube.png"  data-explanation="Here you can create a new Cube!"  id="btn-add-cube"   alt="Add Cube">
+          <img src="add-sphere.png" data-explanation="You can create a new Ball here!" id="btn-add-sphere" alt="Add Sphere">
+          <img src="add-mesh.png" class=""  id="btn-add-gltf" data-explanation="Click here to import a Mesh!"   alt="Add 3D Model">
+          <img src="add-image.png"   id="btn-add-image" data-explanation="Here you can add an Image from your device!"   alt="Add Image As Plane">
         </div>
       </div>
       <div class="panel" id="outlinerPanel">
@@ -134,6 +134,7 @@
 <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
+<script src="axel.js"></script>
 
 <script src="main.js"  ></script>
 <!-- place this anywhere inside <body> -->
