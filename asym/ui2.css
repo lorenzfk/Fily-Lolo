@@ -116,7 +116,10 @@ margin:10px;
   filter: invert(0);
 }
 .cBig{
- height:66%!important;
+ height:66%;
+}
+.cBig2{
+ height:100%!important;
 }
 #outlfinerPanel{
   background-color: RGBA(0,0,0,0);

@@ -1,4 +1,6 @@
-// Axel Virtual Assistant v2.1
+// Axel Virtual Assistant v2.2
+let shadowOffsetFactor = [30,30];
+let t =0;
 document.addEventListener('DOMContentLoaded', () => {
   // --- 1. Create Axel container ---
   const axelContainer = document.createElement('div');
@@ -20,10 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
   Object.assign(sprite.style, {
     width: '100%',
     display: 'block',
-    zIndex:'6',
+    zIndex: '6',
     transformOrigin: 'center center',
-    transition: 'transform 1s ease',
-    filter:'drop-shadow(2px 10px 1px RGBA(0,0,0,0.7))'
+    transition: 'transform .1s ease',
   });
   axelContainer.appendChild(sprite);
 
@@ -33,8 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     position: 'absolute',
     bottom: '110px',
     left: '0',
-    transform: '',
-    zIndex:'-2',
+    zIndex: '6',
     margin: 'auto',
     padding: '8px 12px',
     background: 'white',
@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- 4. Pointing logic ---
   let currentTarget = null;
-
   function pointTo(el) {
     if (!el) return;
     currentTarget = el;
@@ -82,12 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
     axelContainer.style.left = x + 'px';
     axelContainer.style.top  = y + 'px';
 
-    // rotate sprite to face the element
-    const cx = x + spriteRect.width  / 2;
+    // rotate sprite to face the element (+90° to align correctly)
+    const cx = x + spriteRect.width / 2;
     const cy = y + spriteRect.height / 2;
-    const angle = 90+Math.atan2(ty - cy, tx - cx) * 180 / Math.PI;
+    const angle = 90 + Math.atan2(ty - cy, tx - cx) * 180 / Math.PI;
     sprite.style.transform = `rotate(${angle}deg)`;
-    bubble.style.top = sprite.style.top +'px';
+    sprite.style.zIndex='333';
+    sprite.style.overflow='hidden';
+    bubble.style.zIndex='-1';
+    const shadowOffset = [(((angle / 360)*2)+0.5)*shadowOffsetFactor[0],(((angle / 360)*2)+0.5)*shadowOffsetFactor[1]];
+    sprite.style.filter = 'drop-shadow(' + shadowOffset[0] + 'px ' + shadowOffset[1] +'px '+'1px rgba(0,0,0,0.7))';
   }
 
   // --- 5. Only pick elements with data-explanation ---
@@ -104,24 +107,30 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- 6. Use data-explanation for speech ---
   function explain(el) {
     return el.getAttribute('data-explanation');
-    
   }
 
-  // 4-second loop
+  // --- 7. Continuous follow loop ---
+  function followLoop() {
+    if (currentTarget) {
+      pointTo(currentTarget);
+    }
+    requestAnimationFrame(followLoop);
+  }
+  followLoop();
+
+  // --- 8. 4-second cycle with highlight toggle ---
   setInterval(() => {
-    
     const el = getRandomElement();
     if (!el) return;
+    // highlight current
     document.querySelectorAll('[data-explanation]').forEach(e =>
-    e.classList.toggle('highlight', e === el)
+      e.classList.toggle('highlight', e === el)
     );
     say(explain(el));
     pointTo(el);
   }, 4000);
-  // highlight only the current element
-
-
-  // --- 7. Re-anchor on scroll/resize ---
-  window.addEventListener('scroll', () => pointTo(currentTarget));
-  window.addEventListener('resize', () => pointTo(currentTarget));
 });
+setInterval(() => {
+    t+=0.1;
+    //shadowOffsetFactor[0] = (Math.sin(t)+1)*20;
+     }, 100);
