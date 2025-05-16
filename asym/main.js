@@ -438,7 +438,7 @@ function updateMaterialColor(){
 // handle panel scroll cBig
 function handlePanelScroll(){
   const cp = document.querySelector('.controls-panels');
-  if(cp.scrollTop>20) cp.classList.add('cBig');
+  if(cp.scrollTop>20) cp.classList.add('cBig'); 
   else               cp.classList.remove('cBig');
 }
 

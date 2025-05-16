@@ -2,6 +2,7 @@
   :root {
   --frame-blue: #31bdef;
   --lightg: #cecece;
+  --axel-skin: #8e44f3;
 }
 * {
  user-select: none;
@@ -224,16 +225,33 @@ input{
 }
 
 @keyframes highlightme {
-    0%{ outline: 2px solid var(--frame-blue);}
-    40%{outline: 5px solid var(--frame-blue);}}
+    0%{ outline: 2px solid var(--axel-skin);}
+    40%{outline: 5px solid var(--axel-skin);}
 }
 
 .highlight::after{
 
 }
 .highlight{
+    border-radius: 5px;
     overflow: hidden;
     animation: highlightme 1.0s infinite;
+}
+#dismissAxel {
+    background: none;
+    padding: 2px 5px;
+    color: var(--axel-skin);
+    border-radius: 10px ;
+    border: 2px solid var(--axel-skin);
+    margin:5px;
+    height:50px;
+    width: 100px;
+    transition: .1s;
+}
+
+#dismissAxel:hover{
+    background-color: var(--axel-skin);
+    color: white!important;
 }
 
 /* Force pixelated rendering on images, canvas, video… */

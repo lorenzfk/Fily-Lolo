@@ -1,5 +1,5 @@
 // Axel Virtual Assistant v2.2
-let shadowOffsetFactor = [30,30];
+let shadowOffsetFactor = [-90,-80];
 let t =0;
 document.addEventListener('DOMContentLoaded', () => {
   // --- 1. Create Axel container ---
@@ -21,9 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
   sprite.alt = 'Axel';
   Object.assign(sprite.style, {
     width: '100%',
+    userSelect: 'none',
     display: 'block',
+    pointerEvents:'none',
+    filter: 'dropShadow(30px 10px 3px RGBA(0,0,0,0.7))',
     zIndex: '6',
-    transformOrigin: 'center center',
+    transformOrigin: '40% 50%',
     transition: 'transform .1s ease',
   });
   axelContainer.appendChild(sprite);
@@ -31,26 +34,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- 3. Speech bubble ---
   const bubble = document.createElement('div');
   Object.assign(bubble.style, {
-    position: 'absolute',
-    bottom: '110px',
-    left: '0',
+    position: 'fixed',
+    userSelect: 'none',
+    pointerEvents:'none',
+    backdropFilter: 'blur(5px)',
     zIndex: '6',
     margin: 'auto',
-    padding: '8px 12px',
-    background: 'white',
+    borderTop: '2px solid white',
+    borderBottom: '2px solid darkgrey',
+    borderLeft: '1px solid white',
+    borderRight: '1px solid darkgrey',
+    padding: '18px 18px 18px 18px',
+    background: 'RGBA(255,255,255,0.4)',
     borderRadius: '8px',
-    boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
+    transform: 'scaleX(1) scaleY(1)',
+    boxShadow: '10px 25px 3px rgba(0,0,0,0.3)',
     fontFamily: 'sans-serif',
     fontSize: '14px',
     display: 'none',
-    minWidth: '300px',
+    width:'auto',
+    maxHeight: '300px',
     textAlign: 'left'
   });
   axelContainer.appendChild(bubble);
 
   function say(text, duration = 2500) {
     bubble.textContent = text;
-    bubble.style.display = 'block';
+    bubble.innerHTML= bubble.textContent+'<button id="dismissAxel" style="color:yellow">Dismiss Axel</button>';
+    bubble.style.display = 'flex';
     clearTimeout(bubble._timeout);
     bubble._timeout = setTimeout(() => {
       bubble.style.display = 'none';
@@ -89,8 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
     sprite.style.zIndex='333';
     sprite.style.overflow='hidden';
     bubble.style.zIndex='-1';
-    const shadowOffset = [(((angle / 360)*2)+0.5)*shadowOffsetFactor[0],(((angle / 360)*2)+0.5)*shadowOffsetFactor[1]];
-    sprite.style.filter = 'drop-shadow(' + shadowOffset[0] + 'px ' + shadowOffset[1] +'px '+'1px rgba(0,0,0,0.7))';
+    bubble.style.top  = (y+80) + 'px';
+    bubble.style.left  = ((x/2)+( window.getBoundingClientRect.width/2))+ 'px';
+    const shadowOffset = [(((angle / 360))-0.5)*shadowOffsetFactor[0],(((angle / 360))+-.5)*shadowOffsetFactor[1]];
+    sprite.style.filter = `drop-shadow(${shadowOffset[0]}px ${shadowOffset[1]}px 1px rgba(0,0,0,0.7))!important`;
   }
 
   // --- 5. Only pick elements with data-explanation ---
