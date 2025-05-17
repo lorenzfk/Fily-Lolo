@@ -237,21 +237,32 @@ input{
     overflow: hidden;
     animation: highlightme 1.0s infinite;
 }
-#dismissAxel {
-    background: none;
+
+#dismissAxel:hover, #axelNext:hover {
+    scale:1.1;
+     background-color: var(--axel-skin);
+    color: white!important;
+}
+#dismissAxel, #axelNext {
+    background: var(--axel-skin);
     padding: 2px 5px;
-    color: var(--axel-skin);
     border-radius: 10px ;
+    
+    transform: none;
     border: 2px solid var(--axel-skin);
     margin:5px;
     height:50px;
     width: 100px;
     transition: .1s;
 }
-
-#dismissAxel:hover{
-    background-color: var(--axel-skin);
+#axelNext{
     color: white!important;
+}
+#dismissAxel{
+    scale:.9;
+    background: none;
+    color: var(--axel-skin)!important;
+    border: 2px solid var(--axel-skin);
 }
 
 /* Force pixelated rendering on images, canvas, video… */

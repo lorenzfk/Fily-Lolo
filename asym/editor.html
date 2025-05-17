@@ -9,7 +9,7 @@
 
 <body>
   
-  <img src="asymlogo.png" id="logo" alt="logo" data-explanation="Welcome to asym.space!" style="filter: saturate(100%) contrast(100%) brightness(115%) hue-rotate(-30deg) drop-shadow(0px 0px 6px RGBA(0,0,0,0.5));z-index:998;width:50px;position: fixed; top:10px;left:50%;transform: translateX(-50%) scale(.7);overflow: hidden;"><span style="transform: translateY(310%) scale(0.5,1.0);">asym.space</span></img>
+  <img src="asymlogo.png" id="logo" alt="logo" data-explanation="Welcome to asym.space! I am Axel your axis-loving virtual assistant!" style="filter: saturate(100%) contrast(100%) brightness(115%) hue-rotate(-30deg) drop-shadow(0px 0px 6px RGBA(0,0,0,0.5));z-index:998;width:50px;position: fixed; top:10px;left:50%;transform: translateX(-50%) scale(.7);overflow: hidden;"><span style="transform: translateY(310%) scale(0.5,1.0);">asym.space</span></img>
   <div class="container">
     <div class="viewport-container" data-explanation="Here is where you see your space. Use your fingers to move around!">
       <div id="sceneViewer"></div>
@@ -31,14 +31,14 @@
                data-panel="controlsPanel"
                alt="Show/Hide Properties">
         </div>
-        <div class="panel-content" style="justify-content:space-beween;">
-          <img src="add-cube.png"  data-explanation="Here you can create a new Cube!"  id="btn-add-cube"   alt="Add Cube">
-          <img src="add-sphere.png" data-explanation="You can create a new Ball here!" id="btn-add-sphere" alt="Add Sphere">
+        <div class="panel-content" style="justify-content:space-beween;" data-explanation="Add Objects to your space here!">
+          <img src="add-cube.png"  id="btn-add-cube"   alt="Add Cube">
+          <img src="add-sphere.png"  id="btn-add-sphere" alt="Add Sphere">
           <img src="add-mesh.png" class=""  id="btn-add-gltf" data-explanation="Click here to import a Mesh!"   alt="Add 3D Model">
           <img src="add-image.png"   id="btn-add-image" data-explanation="Here you can add an Image from your device!"   alt="Add Image As Plane">
         </div>
       </div>
-      <div class="panel smol" id="outlinerPanel"  data-explanation="In this list are all objects in your space. Click one to select it!" >
+      <div class="panel smol" id="outlinerPanel"   >
         <div class="panel-top">
           <h3>object list</h3>
           <img src="eye-open.png"
@@ -46,7 +46,7 @@
                data-panel="outlinerPanel"
                alt="Show/Hide Properties">
         </div>
-        <div class="panel-content">
+        <div class="panel-content" data-explanation="In this list are all objects in your space. Click one to select it!">
           <ul id="outlinerList" style="display:flex; flex-direction:column">
           </ul>
         </div>

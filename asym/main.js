@@ -269,12 +269,23 @@ function createImage() {
     reader.onload = e2 => {
       const img = new Image();
       img.onload = () => {
-        const ar = img.width/img.height, w=5, h=w/ar;
-        const tex = new THREE.Texture(img); tex.needsUpdate = true;
-        const plane = new THREE.Mesh(
-          new THREE.PlaneGeometry(w,h),
-          new THREE.MeshBasicMaterial({ map:tex, transparent:true, alpha })
-        );
+        const ar = img.width / img.height;
+        const w = 5, h = w / ar;
+        
+        // Create texture and enable updates for transparency
+        const tex = new THREE.Texture(img);
+        tex.needsUpdate = true;
+
+        // Material with transparency
+        const material = new THREE.MeshBasicMaterial({
+          map: tex,
+          transparent: true,     // Ensure transparency is enabled
+          alphaTest: 0.5,        // Set a threshold for alpha transparency
+          opacity: 1.0           // You can adjust this if needed
+        });
+
+        // Create the plane geometry and apply the texture
+        const plane = new THREE.Mesh(new THREE.PlaneGeometry(w, h), material);
         scene.add(plane);
         plane.name = `#${objectCounter++} Image`;
         addToOutliner(plane);
@@ -286,6 +297,7 @@ function createImage() {
   };
   input.click();
 }
+
 function showGLTFInput() {
   const input = document.createElement('input');
   input.type   = 'file';
