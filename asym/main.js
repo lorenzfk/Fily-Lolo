@@ -298,6 +298,7 @@ function createImage() {
   input.click();
 }
 
+
 function showGLTFInput() {
   const input = document.createElement('input');
   input.type   = 'file';

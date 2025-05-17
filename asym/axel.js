@@ -105,8 +105,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // permanently show chat input
   function showChatInput() {
+    
     clearTimeout(bubble._timeout);
     bubble.style.pointerEvents = 'auto';
+    pointTo(document.getElementById('axelChill'));
     bubble.innerHTML =
       '<input type="text" id="axelInput" placeholder="Ask me…" style="flex:1; margin-right:8px; pointer-events:all;">' +
       '<button id="axelSend" style="pointer-events:all;">Send</button>';
