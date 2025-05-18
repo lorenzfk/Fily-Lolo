@@ -429,12 +429,12 @@ function addToOutliner(object) {
   del.style.width = del.style.height = '16px';
   del.style.marginLeft = '8px';
 
-  del.addEventListener('click', e => {
+  del.addEventListener('click', (e) => {
     e.stopPropagation();
     // remove from scene
     scene.remove(object);
     // remove from objectList
-    objectList = objectList.filter(o => o !== object);
+    objectList = objectList.filter((o) => o !== object);
     // remove this <li>
     li.remove();
     // clear properties panel if that was selected
@@ -448,6 +448,7 @@ function addToOutliner(object) {
   li.appendChild(del);
   document.getElementById('outlinerList').appendChild(li);
 }
+
 
 
 
@@ -655,3 +656,55 @@ document.addEventListener('keydown', e => {
 document.addEventListener('gesturestart', e => {
   e.preventDefault();
 });
+
+// Function to load the scene from the file input
+function loadSceneFromFile() {
+    document.getElementById('loadButton').classList.remove('highlight');  
+  const fileInput = document.getElementById('sceneFileInput');
+  const file = fileInput.files[0];
+  if (file) {
+    loadScene(file);  // Load the scene from the file
+  }
+}
+
+// Function to actually load the scene data
+function loadScene(file) {
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    const json = e.target.result;
+    const loader = new THREE.ObjectLoader();
+    const loadedScene = loader.parse(JSON.parse(json));
+
+    // First, clear the current scene and outliner
+    clearScene();
+    clearOutliner();
+
+    // Add the new scene's objects to the main scene and outliner
+    scene.add(loadedScene);
+
+    // Now, add all objects from the loaded scene to the Outliner
+    loadedScene.traverse((child) => {
+      if (child instanceof THREE.Mesh || child instanceof THREE.Group) {
+        addToOutliner(child);  // Add each object in the loaded scene to the Outliner
+      }
+    });
+  };
+
+  reader.readAsText(file);
+}
+
+function clearScene() {
+  // Remove all objects from the current scene
+  while (scene.children.length) {
+    scene.remove(scene.children[0]);
+  }
+}
+
+function clearOutliner() {
+  // Remove all items from the Outliner list
+  const outlinerList = document.getElementById('outlinerList');
+  outlinerList.innerHTML = '';  // Clear the Outliner
+}
+
+// Add object to the Outliner

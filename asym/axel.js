@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     bubble.style.pointerEvents = 'auto';
     bubble.innerHTML =
-      '<input type="text" id="axelInput" placeholder="Ask me…" style="flex:1;margin-right:8px;pointer-events:all;">' +
+      '<input type="text" id="axelInput" placeholder="Ask axel…" style="flex:1;margin-right:8px;pointer-events:all;">' +
       '<button id="axelSend" style="pointer-events:all;">Send</button>';
     bubble.style.display = 'flex';
   }
@@ -226,7 +226,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const input = document.getElementById('axelInput');
       const q = input?.value.trim();
       if (q) {
-        say(`You asked: "${q}"`);
+
+        say(`You asked: "${q}" but since my amazing AI capabilities have not been implemented yet, i cannot answer anything of value. `);
         input.value = '';
       }
     }

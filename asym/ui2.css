@@ -170,14 +170,14 @@ background: linear-gradient(180deg, rgba(255, 255, 255, 1) 40%, rgba(184, 184, 1
 }
 
 .panel button {
-  background-color: black; /* White buttons */
+  background: linear-gradient(180deg, rgba(255, 255, 255, 1) 40%, rgba(184, 184, 184, 1) 100%);
   color: white;
-  border: none;
+  border: 2px solid darkgray;
   padding: 10px;
   font-size: 14px;
   cursor: pointer;
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: 10px!important;
   border-radius: 5px;
 }
 input{

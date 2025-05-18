@@ -4,13 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,
                user-scalable=no">
-  <title>ASM Editor</title>
+  <title>asym.space - editor</title>
+  <link rel="icon" href="asymlogo.png" type="image/png">
   <link rel="stylesheet" href="ui2.css">
 </head>
 
 <body>
   <div id="axelChill" style="position: fixed;left:20%;top:0;"></div>
-  <img src="asymlogo.png" id="logo" alt="logo" data-explanation="Welcome to asym.space! I am Axel your axis-loving virtual assistant!" style="filter: saturate(100%) contrast(100%) brightness(115%) hue-rotate(-30deg) drop-shadow(0px 0px 6px RGBA(0,0,0,0.5));z-index:998;width:50px;position: fixed; top:10px;left:50%;transform: translateX(-50%) scale(.7);overflow: hidden;"><span style="transform: translateY(310%) scale(0.5,1.0);">asym.space</span></img>
+  <img src="asymlogo.png" id="logo" alt="logo" data-explanation="Welcome to asym.space! I am Axel the axis and here to help you navigate!" style="filter: saturate(100%) contrast(100%) brightness(115%) hue-rotate(-30deg) drop-shadow(0px 0px 6px RGBA(0,0,0,0.5));z-index:998;width:50px;position: fixed; top:10px;left:50%;transform: translateX(-50%) scale(.7);overflow: hidden;"><span style="transform: translateY(310%) scale(0.5,1.0);">asym.space</span></img>
   <div class="container">
     <div class="viewport-container" data-explanation="Here is where you see your space. Use your fingers to move around!">
       <div id="sceneViewer"></div>
@@ -32,7 +33,7 @@
                data-panel="controlsPanel"
                alt="Show/Hide Properties">
         </div>
-        <div class="panel-content" style="justify-content:space-beween;" data-explanation="Add Objects to your space here!">
+        <div class="panel-content" style="justify-content:space-beween;" >
           <img src="add-cube.png"  id="btn-add-cube"   alt="Add Cube">
           <img src="add-sphere.png"  id="btn-add-sphere" alt="Add Sphere">
           <img src="add-mesh.png" class=""  id="btn-add-gltf" data-explanation="Click here to import a Mesh!"   alt="Add 3D Model">
@@ -112,13 +113,23 @@
       <!-- More Panel -->
       <div class="panel smol" id="morePanel">
         <div class="panel-top">
-          <h3>more</h3>
+
+          <h3>save & load</h3>
           <img src="eye-closed.png"
                class="minimize-button"
                data-panel="morePanel"
                alt="Show/Hide Properties">
         </div>
-        <div class="panel-content">
+        <!-- Add buttons for saving and loading the scene -->
+
+        <div class="panel-content" data-explanation="Click here to save or load your space!">
+          <!-- Add buttons for saving and loading the scene -->
+<!-- Add buttons for saving and loading the scene -->
+<button onclick="saveScene()">Save Space</button>
+<button id="loadButton" style="display: none;" onclick="loadSceneFromFile()">Load Space</button>
+<input type="file" id="sceneFileInput" accept=".space"  style="display: none;" />
+<button onclick="triggerFileInput()">Upload Space File</button>
+
           <a style="color:white" href="https://instagram.com/falkson_">Check my Instagram</a>
         </div>
       </div>
@@ -138,6 +149,7 @@
 <script src="axel.js"></script>
 <script src="no-zoom.js"  ></script>
 <script src="main.js"  ></script>
+<script src="saveload.js"  ></script>
 <!-- place this anywhere inside <body> -->
 
 </html>
