@@ -210,9 +210,55 @@ function animate() {
     const isJoystickVisible = joystickEl && window.getComputedStyle(joystickEl).display !== 'none';
     axisModel.visible = isJoystickVisible;
   }
-  
+// ───────────────────────────────────────────────
+
+// Create the raycaster and mouse vector globally
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+// Add event listener for mouse or touch events (for mobile & desktop)
+document.getElementById('sceneViewer').addEventListener('click', (event) => {
+    // Normalize mouse position
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Perform raycasting
+    const intersects = getIntersects(mouse);
+
+    if (intersects.length > 0) {
+        const object = intersects[0].object;
+        selectObjectFromOutliner(object);  // Select object and update panel
+    }
+});
+
+// ───────────────────────────────────────────────
+// Perform raycasting on all objects in the scene
+// ───────────────────────────────────────────────
+function getIntersects(mouse) {
+    // Set up the raycaster from the camera using mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // Return all objects that intersect the ray
+    return raycaster.intersectObjects(scene.children, true);  // true to include all child objects
+}
+
+ 
   renderer.render(scene, camera);
 }
+document.getElementById('sceneViewer').addEventListener('touchstart', (event) => {
+    event.preventDefault();  // Prevents double-tap zoom and other gestures
+
+    // Normalize the touch position
+    mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+
+    const intersects = getIntersects(mouse);
+
+    if (intersects.length > 0) {
+        const object = intersects[0].object;
+        selectObjectFromOutliner(object);  // Select object and update panel
+    }
+});
 
 // kick it all off
 init();
