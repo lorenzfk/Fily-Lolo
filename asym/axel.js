@@ -52,7 +52,8 @@ document.addEventListener('DOMContentLoaded', () => {
     fontSize: '14px',
     display: 'none',
     maxWidth: '300px',
-    textAlign: 'left'
+    textAlign: 'left',
+    marginTop:'80px'
   });
   axelContainer.appendChild(bubble);
 
@@ -118,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const angle = 90 + Math.atan2(ty - cy, tx - cx)*180/Math.PI;
     sprite.style.transform = `rotate(${angle}deg)`;
 
-    bubble.style.top  = `${y + 80}px`;
+    bubble.style.top  = `${y }px`;
     bubble.style.left = '50%';
 
     document.querySelectorAll('[data-explanation]').forEach(e =>
