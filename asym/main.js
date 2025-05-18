@@ -8,7 +8,7 @@ let currentObject = null, objectList = [], objectCounter = 1;
 let yAxisModel;               // the Y-axis helper
 let movementMode = 'xz';      // toggle between 'xz' and 'y'
 // ─────────────────────────────────────────────────────────
-
+const mouse = new THREE.Vector2();
 const joystickEl = document.getElementById('joystickContainer'); // your on-screen joystick wrapper
 
 const scrollSpeed1 = new THREE.Vector2(-0.0004, 0.00003);
@@ -215,12 +215,32 @@ function animate() {
 // Create the raycaster and mouse vector globally
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
+// ───────────────────────────────────────────────
+// Add event listener for touch events (for mobile & desktop)
+// ───────────────────────────────────────────────
 
-// Add event listener for mouse or touch events (for mobile & desktop)
+// Touch event (for mobile devices)
 document.getElementById('sceneViewer').addEventListener('click', (event) => {
     // Normalize mouse position
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    // Perform raycasting
+    const intersects = getIntersects(mouse);
+
+    if (intersects.length > 0) {
+        const object = intersects[0].object;
+        selectObjectFromOutliner(object);  // Select object and update panel
+    }
+});
+
+// Touch event (for mobile devices)
+document.getElementById('sceneViewer').addEventListener('touchstart', (event) => {
+    event.preventDefault();  // Prevents double-tap zoom and other gestures
+
+    // Normalize touch position (converting from screen coordinates to normalized device coordinates)
+    mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
 
     // Perform raycasting
     const intersects = getIntersects(mouse);
@@ -241,24 +261,10 @@ function getIntersects(mouse) {
     // Return all objects that intersect the ray
     return raycaster.intersectObjects(scene.children, true);  // true to include all child objects
 }
-
- 
+   
   renderer.render(scene, camera);
 }
-document.getElementById('sceneViewer').addEventListener('touchstart', (event) => {
-    event.preventDefault();  // Prevents double-tap zoom and other gestures
 
-    // Normalize the touch position
-    mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
-    mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
-
-    const intersects = getIntersects(mouse);
-
-    if (intersects.length > 0) {
-        const object = intersects[0].object;
-        selectObjectFromOutliner(object);  // Select object and update panel
-    }
-});
 
 // kick it all off
 init();
